@@ -361,7 +361,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Fredoka",sans-seri
     <div class="merr" id="ferr"></div>
     <div class="mok" id="fok"></div>
     <button class="btn-save" id="savebtn"><span id="savetxt">Go Live On The Map</span></button>
-    <button class="btn-skip" id="btn-skip">Skip &mdash; just view the map</button>
+    <button class="btn-skip" id="btn-skip">Skip for now &mdash; go straight to the map</button>
+    <div class="fh" style="text-align:center;margin-top:6px;">You can always add your profile later from the map</div>
   </div>
 </div>
 
@@ -510,6 +511,12 @@ function goLanding() {
 }
 
 function showMap() {
+  // Hard gate — must be a verified holder to see the map
+  if (!wallet || holdings.length === 0) {
+    goLanding();
+    toast("You must own a Garbage Friend to view the map.", "err");
+    return;
+  }
   showScreen("sm");
   if (!mapReady) { mapReady = true; setTimeout(initMap, 100); }
   else { setTimeout(function() { MAP && MAP.invalidateSize(); }, 200); }
