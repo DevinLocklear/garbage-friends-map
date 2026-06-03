@@ -111,13 +111,13 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Fredoka",sans-seri
 .mtb-r{display:flex;align-items:center;gap:12px;}
 .mtb-c{font-size:11px;font-weight:500;color:var(--dgrey);}
 .mtb-c span{color:var(--lime);font-weight:700;}
-.mtb-w{font-family:monospace;font-size:10px;color:var(--dgrey);background:var(--dcard);border:1px solid var(--dborder);padding:4px 10px;border-radius:4px;}
+.mtb-w{font-family:monospace;font-size:10px;color:var(--dgrey);background:var(--dcard);border:1px solid var(--dborder);padding:4px 8px;border-radius:4px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 #mleg{position:absolute;bottom:90px;left:16px;background:rgba(7,10,7,.92);border:1px solid var(--dborder);border-radius:8px;padding:10px 14px;z-index:500;}
 .leg-t{font-size:8px;font-weight:700;color:var(--dgrey);letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px;}
 .leg-r{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
 .leg-d{width:9px;height:9px;border-radius:50%;border:2px solid;flex-shrink:0;}
 .leg-l{font-size:10px;font-weight:500;color:#7A9A6A;}
-#mbtn{display:none;position:absolute;bottom:24px;right:16px;z-index:500;background:var(--dcard);border:1px solid var(--dborder);border-radius:10px;padding:10px 14px;cursor:pointer;align-items:center;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,.6);transition:border-color .2s;}
+#mbtn{display:none;position:absolute;bottom:80px;right:16px;z-index:500;background:var(--dcard);border:1px solid var(--dborder);border-radius:10px;padding:10px 14px;cursor:pointer;align-items:center;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,.6);transition:border-color .2s;}
 #mbtn:hover{border-color:var(--lime);}
 #mbtn.show{display:flex;}
 #mbtn-img{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--lime);object-fit:cover;display:none;}
@@ -158,17 +158,17 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Fredoka",sans-seri
   gap:0; z-index:499; backdrop-filter:blur(8px);
 }
 .sb-item {
-  display:flex; align-items:center; gap:6px;
-  padding:0 18px; border-right:1px solid var(--dborder);
-  font-size:11px; font-weight:500; color:var(--dgrey);
+  display:flex; align-items:center; gap:4px;
+  padding:0 10px; border-right:1px solid var(--dborder);
+  font-size:10px; font-weight:500; color:var(--dgrey);
   white-space:nowrap;
 }
 .sb-item:last-child { border-right:none; }
-.sb-num { color:var(--lime); font-weight:700; font-size:12px; }
+.sb-num { color:var(--lime); font-weight:700; font-size:11px; }
 
 /* ── SLIDE PANELS (leaderboard + activity) ── */
 .slide-panel {
-  position:absolute; top:84px; bottom:0; width:300px;
+  position:absolute; top:84px; bottom:0; width:min(300px,85vw);
   background:rgba(7,10,7,.97); border-right:1px solid var(--dborder);
   z-index:490; display:flex; flex-direction:column;
   transition:transform .3s cubic-bezier(.16,1,.3,1);
@@ -231,21 +231,21 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Fredoka",sans-seri
 
 /* Panel toggle buttons */
 .panel-toggle {
-  position:absolute; top:96px; z-index:491;
-  background:rgba(7,10,7,.9); border:1px solid var(--dborder);
-  border-radius:0 6px 6px 0; padding:8px 10px;
+  position:absolute; top:120px; z-index:491;
+  background:rgba(7,10,7,.85); border:1px solid var(--dborder);
+  border-radius:0 6px 6px 0; padding:6px 8px;
   cursor:pointer; transition:all .2s; display:flex; flex-direction:column;
-  align-items:center; gap:3px;
+  align-items:center; gap:2px;
 }
 .panel-toggle.right-toggle { right:0; border-radius:6px 0 0 6px; }
 .panel-toggle:hover { background:rgba(30,42,30,.9); border-color:var(--lime); }
-.panel-toggle svg { width:16px; height:16px; fill:var(--lime); }
-.pt-label { font-size:8px; font-weight:700; color:var(--dgrey); letter-spacing:.08em; text-transform:uppercase; }
+.panel-toggle svg { width:14px; height:14px; fill:var(--lime); }
+.pt-label { font-size:7px; font-weight:700; color:var(--dgrey); letter-spacing:.06em; text-transform:uppercase; }
 .pt-badge {
-  position:absolute; top:-6px; right:-6px;
+  position:absolute; top:-5px; right:-5px;
   background:var(--lime); color:#000;
-  font-size:8px; font-weight:700; min-width:16px; height:16px;
-  border-radius:8px; padding:0 3px;
+  font-size:7px; font-weight:700; min-width:14px; height:14px;
+  border-radius:7px; padding:0 3px;
   display:none; align-items:center; justify-content:center;
 }
 .pt-badge.show { display:flex; }
@@ -277,6 +277,54 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Fredoka",sans-seri
 .vc-yes:hover { background:var(--purple-dark); }
 .vc-no  { padding:8px 14px; background:transparent; border:1.5px solid var(--border); border-radius:8px; font-size:12px; font-weight:600; color:var(--textd); cursor:pointer; transition:all .2s; }
 .vc-no:hover { border-color:var(--text); color:var(--text); }
+
+@media (max-width: 430px) {
+  #stats-bar { height:28px; }
+  .sb-item { padding:0 7px; font-size:9px; }
+  .sb-num { font-size:10px; }
+  .panel-toggle { top:112px; padding:5px 7px; }
+  .mtb-count { display:none; }
+  #mleg { bottom:70px; }
+}
+
+/* ── WALLET SELECTOR ── */
+.wallet-overlay {
+  position:fixed; inset:0; z-index:800;
+  background:rgba(0,0,0,.6); display:flex;
+  align-items:center; justify-content:center;
+  backdrop-filter:blur(6px);
+}
+.wallet-overlay.hidden { display:none; }
+.wallet-modal {
+  background:var(--bgc); border:1.5px solid var(--border);
+  border-radius:16px; padding:24px 20px 16px;
+  width:min(320px,88vw);
+  box-shadow:0 16px 48px rgba(0,0,0,.3);
+}
+.wm-title {
+  font-family:"Fredoka One",cursive;
+  font-size:20px; color:var(--text);
+  text-align:center; margin-bottom:16px;
+  letter-spacing:.05em;
+}
+.wm-list { display:flex; flex-direction:column; gap:10px; margin-bottom:14px; }
+.wm-option {
+  display:flex; align-items:center; gap:14px;
+  padding:14px 16px; background:var(--bg);
+  border:1.5px solid var(--border); border-radius:12px;
+  cursor:pointer; transition:all .2s; text-decoration:none;
+}
+.wm-option:hover { border-color:var(--purple); background:#f0ecff; }
+.wm-icon { width:36px; height:36px; border-radius:8px; object-fit:contain; flex-shrink:0; }
+.wm-name { font-size:14px; font-weight:700; color:var(--text); }
+.wm-desc { font-size:10px; color:var(--textd); margin-top:1px; }
+.wm-cancel {
+  width:100%; padding:10px; background:transparent;
+  border:1.5px solid var(--border); border-radius:10px;
+  font-size:12px; font-weight:600; color:var(--textd);
+  cursor:pointer; transition:all .2s;
+}
+.wm-cancel:hover { border-color:var(--text); color:var(--text); }
 </style>
 </head>
 <body>
@@ -287,6 +335,15 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Fredoka",sans-seri
   <button class="btn-conn" id="btn-conn">Connect Wallet</button>
   <a class="btn-mm" id="btn-mm" href="#">&#128241; Open in MetaMask App</a>
   <div class="l-err" id="l-err"></div>
+
+  <!-- Wallet selector overlay -->
+  <div class="wallet-overlay hidden" id="wallet-overlay">
+    <div class="wallet-modal">
+      <div class="wm-title">Choose Wallet</div>
+      <div class="wm-list" id="wm-list"></div>
+      <button class="wm-cancel" onclick="document.getElementById('wallet-overlay').classList.add('hidden')">Cancel</button>
+    </div>
+  </div>
   <div class="l-stats">
     <div class="l-stat"><div class="ls-n" id="lcount">&#8212;</div><div class="ls-l">On the map</div></div>
     <div class="l-stat"><div class="ls-n">4</div><div class="ls-l">Collections</div></div>
@@ -395,7 +452,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Fredoka",sans-seri
   <div id="mtb">
     <!-- centered nav title image -->
     <img id="img-nav" src="" alt="Garbage Friends World Map"
-      style="position:absolute;left:50%;transform:translateX(-50%);height:32px;top:10px;pointer-events:none;max-width:min(460px,55vw);width:auto;"/>
+      style="position:absolute;left:50%;transform:translateX(-50%);height:28px;top:12px;pointer-events:none;max-width:min(420px,42vw);width:auto;"/>
     <div class="mtb-r" style="margin-left:auto;">
       <div class="mtb-c"><span id="mcount">0</span> on the map</div>
       <div class="mtb-w" id="mwallet"></div>
@@ -510,13 +567,86 @@ if (isMobile() && !hasMM()) {
   var mmBtn = document.getElementById("btn-mm");
   mmBtn.href = "https://metamask.app.link/dapp/" + window.location.href.replace("https://","").replace("http://","");
   mmBtn.style.display = "inline-block";
+} else if (window.ethereum && window.ethereum.isBraveWallet && !getMetaMaskProvider()) {
+  // Brave wallet only — show a hint
+  var errEl = document.getElementById("l-err");
+  if (errEl) {
+    errEl.textContent = "Brave Wallet detected. Install MetaMask or disable Brave Wallet for this site to continue.";
+    errEl.style.display = "block";
+  }
 }
 
 loadCount();
 
 /* ── UTILS ── */
 function isMobile() { return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent); }
-function hasMM()    { return typeof window.ethereum !== "undefined"; }
+function hasMM() { return typeof window.ethereum !== "undefined"; }
+
+/* ── WALLET DETECTION ── */
+var activeProvider = null; // set when user picks a wallet
+
+function getMetaMaskProvider() {
+  if (window.ethereum && window.ethereum.providers && window.ethereum.providers.length) {
+    return window.ethereum.providers.find(function(p) { return p.isMetaMask && !p.isBraveWallet; }) || null;
+  }
+  if (window.ethereum && window.ethereum.isMetaMask && !window.ethereum.isBraveWallet) return window.ethereum;
+  return null;
+}
+
+function getOKXProvider() {
+  // OKX injects window.okxwallet
+  if (window.okxwallet) return window.okxwallet;
+  // Also check providers array
+  if (window.ethereum && window.ethereum.providers && window.ethereum.providers.length) {
+    return window.ethereum.providers.find(function(p) { return p.isOKExWallet || p.isOKXWallet; }) || null;
+  }
+  return null;
+}
+
+function getAvailableWallets() {
+  var wallets = [];
+  var mm = getMetaMaskProvider();
+  var okx = getOKXProvider();
+  if (mm)  wallets.push({ id:"metamask", name:"MetaMask",   desc:"Connect with MetaMask",   provider:mm,  icon:"https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" });
+  if (okx) wallets.push({ id:"okx",      name:"OKX Wallet", desc:"Connect with OKX Wallet", provider:okx, icon:"https://static.okx.com/cdn/assets/imgs/247/58E63FEA47A2B7D7.png" });
+  return wallets;
+}
+
+function showWalletSelector() {
+  var wallets = getAvailableWallets();
+  var list = document.getElementById("wm-list");
+  list.innerHTML = "";
+
+  wallets.forEach(function(w) {
+    var btn = document.createElement("button");
+    btn.className = "wm-option";
+
+    var icon = document.createElement("img");
+    icon.className = "wm-icon";
+    icon.src = w.icon;
+    icon.onerror = function() { this.style.display="none"; };
+
+    var info = document.createElement("div");
+    var name = document.createElement("div"); name.className = "wm-name"; name.textContent = w.name;
+    var desc = document.createElement("div"); desc.className = "wm-desc"; desc.textContent = w.desc;
+    info.appendChild(name); info.appendChild(desc);
+
+    btn.appendChild(icon); btn.appendChild(info);
+    btn.onclick = function() {
+      document.getElementById("wallet-overlay").classList.add("hidden");
+      connectWithProvider(w.provider);
+    };
+    list.appendChild(btn);
+  });
+
+  // If only one wallet, skip selector and connect directly
+  if (wallets.length === 1) {
+    connectWithProvider(wallets[0].provider);
+    return;
+  }
+
+  document.getElementById("wallet-overlay").classList.remove("hidden");
+}
 function jitter()   { return (Math.random() - 0.5) * 2.5; }
 
 function showScreen(id) {
@@ -613,16 +743,30 @@ async function connectWallet() {
     window.location.href = "https://metamask.app.link/dapp/" + window.location.href.replace("https://","").replace("http://","");
     return;
   }
-  if (!window.ethereum) {
-    showLandErr("MetaMask not found. Install MetaMask or open this page inside the MetaMask mobile app.");
+
+  var wallets = getAvailableWallets();
+
+  if (wallets.length === 0) {
+    if (window.ethereum && window.ethereum.isBraveWallet) {
+      showLandErr("Brave Wallet detected. Please install MetaMask or OKX Wallet, or disable Brave Wallet for this site.");
+    } else {
+      showLandErr("No supported wallet found. Please install MetaMask or OKX Wallet to continue.");
+    }
     return;
   }
+
+  showWalletSelector();
+}
+
+// Called after wallet is chosen from selector
+async function connectWithProvider(provider) {
+  activeProvider = provider;
   var btn = document.getElementById("btn-conn");
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span> Connecting...';
   document.getElementById("l-err").style.display = "none";
   try {
-    var accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    var accounts = await provider.request({ method: "eth_requestAccounts" });
     if (!accounts || !accounts.length) throw new Error("No accounts returned");
     wallet = accounts[0];
     document.getElementById("ptb-w").textContent  = wallet.slice(0,6) + "..." + wallet.slice(-4);
@@ -631,6 +775,7 @@ async function connectWallet() {
     await checkHoldings();
   } catch(e) {
     btn.textContent = "Connect Wallet"; btn.disabled = false;
+    activeProvider = null;
     if (e.code === 4001) showLandErr("Connection cancelled.");
     else showLandErr("Error: " + (e.message || "Please try again."));
   }
