@@ -741,6 +741,17 @@ async function saveProfile() {
   };
   try {
     var r = await sb.from("gf_profiles").upsert(data, {onConflict:"wallet_address"}).select().single();
+    // If new columns don't exist yet, retry without them
+    if (r.error && r.error.message && r.error.message.indexOf("column") !== -1) {
+      var fallback = {
+        wallet_address:data.wallet_address, username:data.username, bio:data.bio,
+        twitter_handle:data.twitter_handle, profile_picture_url:data.profile_picture_url,
+        location_country:data.location_country, location_state:data.location_state,
+        latitude:data.latitude, longitude:data.longitude, highest_stage:data.highest_stage,
+        stage_1:data.stage_1, stage_2:data.stage_2, stage_3:data.stage_3, stage_4:data.stage_4
+      };
+      r = await sb.from("gf_profiles").upsert(fallback, {onConflict:"wallet_address"}).select().single();
+    }
     if (r.error) throw r.error;
     myProfile = r.data;
     fo.textContent = "You're on the map!"; fo.style.display = "block";
