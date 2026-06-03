@@ -149,6 +149,124 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Fredoka",sans-seri
 #toast.ok{border-color:var(--lime-dark);color:var(--lime-dark);background:#EEF9E4;}
 #toast.err{border-color:#C43020;color:#C43020;background:#FDE8E4;}
 .spin{display:inline-block;width:14px;height:14px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
+
+/* ── STATS BAR ── */
+#stats-bar {
+  position:absolute; top:52px; left:0; right:0; height:32px;
+  background:rgba(7,10,7,.92); border-bottom:1px solid var(--dborder);
+  display:flex; align-items:center; justify-content:center;
+  gap:0; z-index:499; backdrop-filter:blur(8px);
+}
+.sb-item {
+  display:flex; align-items:center; gap:6px;
+  padding:0 18px; border-right:1px solid var(--dborder);
+  font-size:11px; font-weight:500; color:var(--dgrey);
+  white-space:nowrap;
+}
+.sb-item:last-child { border-right:none; }
+.sb-num { color:var(--lime); font-weight:700; font-size:12px; }
+
+/* ── SLIDE PANELS (leaderboard + activity) ── */
+.slide-panel {
+  position:absolute; top:84px; bottom:0; width:300px;
+  background:rgba(7,10,7,.97); border-right:1px solid var(--dborder);
+  z-index:490; display:flex; flex-direction:column;
+  transition:transform .3s cubic-bezier(.16,1,.3,1);
+}
+.slide-panel.right { right:0; left:auto; border-right:none; border-left:1px solid var(--dborder); transform:translateX(100%); }
+.slide-panel.left  { left:0; transform:translateX(-100%); }
+.slide-panel.open  { transform:translateX(0); }
+.sp-head {
+  padding:14px 16px 12px; border-bottom:1px solid var(--dborder);
+  display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+}
+.sp-title { font-family:"Fredoka One",cursive; font-size:16px; color:var(--dtext); letter-spacing:.05em; }
+.sp-close { background:none; border:none; color:var(--dgrey); font-size:18px; cursor:pointer; padding:2px 6px; line-height:1; }
+.sp-close:hover { color:var(--dtext); }
+.sp-body { flex:1; overflow-y:auto; padding:8px 0; }
+.sp-body::-webkit-scrollbar { width:3px; }
+.sp-body::-webkit-scrollbar-thumb { background:var(--dborder); border-radius:2px; }
+
+/* Leaderboard rows */
+.lb-row {
+  display:flex; align-items:center; gap:10px;
+  padding:8px 14px; border-bottom:1px solid rgba(30,42,30,.5);
+  cursor:pointer; transition:background .15s;
+}
+.lb-row:hover { background:rgba(111,208,56,.05); }
+.lb-rank { font-family:"Fredoka One",cursive; font-size:14px; color:var(--dgrey); width:22px; text-align:center; flex-shrink:0; }
+.lb-rank.gold   { color:#F5C835; }
+.lb-rank.silver { color:#C0C0C0; }
+.lb-rank.bronze { color:#CD7F32; }
+.lb-pfp {
+  width:34px; height:34px; border-radius:50%;
+  border:2px solid var(--dborder); background:var(--dcard);
+  overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:14px;
+}
+.lb-pfp img { width:100%; height:100%; object-fit:cover; }
+.lb-info { flex:1; min-width:0; }
+.lb-name { font-size:12px; font-weight:600; color:var(--dtext); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; gap:4px; }
+.lb-loc  { font-size:10px; color:var(--dgrey); margin-top:1px; }
+.lb-stages { display:flex; gap:3px; flex-shrink:0; }
+.lb-pip { width:8px; height:8px; border-radius:50%; }
+
+/* Activity feed rows */
+.af-row {
+  display:flex; align-items:flex-start; gap:9px;
+  padding:9px 14px; border-bottom:1px solid rgba(30,42,30,.4);
+  animation:afSlide .4s ease both;
+}
+@keyframes afSlide { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+.af-pfp {
+  width:28px; height:28px; border-radius:50%;
+  border:1.5px solid var(--dborder); background:var(--dcard);
+  overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px;
+}
+.af-pfp img { width:100%; height:100%; object-fit:cover; }
+.af-text { flex:1; min-width:0; }
+.af-name { font-size:11px; font-weight:600; color:var(--dtext); }
+.af-desc { font-size:10px; color:var(--dgrey); margin-top:1px; }
+.af-time { font-size:9px; color:var(--grey2); flex-shrink:0; margin-top:1px; }
+.af-empty { font-size:11px; color:var(--dgrey); text-align:center; padding:24px 16px; }
+
+/* Panel toggle buttons */
+.panel-toggle {
+  position:absolute; top:96px; z-index:491;
+  background:rgba(7,10,7,.9); border:1px solid var(--dborder);
+  border-radius:0 6px 6px 0; padding:8px 10px;
+  cursor:pointer; transition:all .2s; display:flex; flex-direction:column;
+  align-items:center; gap:3px;
+}
+.panel-toggle.right-toggle { right:0; border-radius:6px 0 0 6px; }
+.panel-toggle:hover { background:rgba(30,42,30,.9); border-color:var(--lime); }
+.panel-toggle svg { width:16px; height:16px; fill:var(--lime); }
+.pt-label { font-size:8px; font-weight:700; color:var(--dgrey); letter-spacing:.08em; text-transform:uppercase; }
+.pt-badge {
+  position:absolute; top:-6px; right:-6px;
+  background:var(--lime); color:#000;
+  font-size:8px; font-weight:700; min-width:16px; height:16px;
+  border-radius:8px; padding:0 3px;
+  display:none; align-items:center; justify-content:center;
+}
+.pt-badge.show { display:flex; }
+
+/* Verification badges */
+.badge-tw { color:#1DA1F2; font-size:11px; }
+.badge-dc { color:#5865F2; font-size:11px; }
+.vbadge { display:inline-flex; align-items:center; gap:3px; font-size:9px; font-weight:700; padding:2px 6px; border-radius:10px; }
+.vbadge-tw { background:rgba(29,161,242,.15); color:#1DA1F2; border:1px solid rgba(29,161,242,.3); }
+.vbadge-dc { background:rgba(88,101,242,.15); color:#5865F2; border:1px solid rgba(88,101,242,.3); }
+
+/* Verify buttons in profile form */
+.verify-row { display:flex; gap:8px; align-items:center; }
+.verify-row .fi { flex:1; }
+.btn-verify {
+  padding:9px 12px; border:1.5px solid var(--border); border-radius:10px;
+  background:var(--bgc); font-size:11px; font-weight:600; cursor:pointer;
+  white-space:nowrap; transition:all .2s; color:var(--textm); flex-shrink:0;
+}
+.btn-verify:hover { border-color:var(--purple); color:var(--purple); }
+.btn-verify.verified { border-color:var(--lime-dark); color:var(--lime-dark); background:#eaf8d8; }
 </style>
 </head>
 <body>
@@ -217,7 +335,22 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Fredoka",sans-seri
     <div class="fb"><label class="fl">Username</label><input class="fi" type="text" id="f-user" placeholder="GarbageKing99" maxlength="24"/></div>
     <div class="fb"><label class="fl">Bio</label><textarea class="fta" id="f-bio" placeholder="Collecting garbage one NFT at a time..." maxlength="140"></textarea></div>
     <div class="fr2">
-      <div class="fb"><label class="fl">Twitter / X</label><input class="fi" type="text" id="f-tw" placeholder="@username"/></div>
+      <div class="fb">
+        <label class="fl">Twitter / X</label>
+        <div class="verify-row">
+          <input class="fi" type="text" id="f-tw" placeholder="@username"/>
+          <button class="btn-verify" id="btn-verify-tw" type="button" onclick="verifyTwitter()">Verify</button>
+        </div>
+        <div class="fh" id="tw-verify-status"></div>
+      </div>
+      <div class="fb">
+        <label class="fl">Discord</label>
+        <div class="verify-row">
+          <input class="fi" type="text" id="f-discord" placeholder="username"/>
+          <button class="btn-verify" id="btn-verify-dc" type="button" onclick="verifyDiscord()">Verify</button>
+        </div>
+        <div class="fh" id="dc-verify-status"></div>
+      </div>
       <div class="fb"><label class="fl">Country</label><input class="fi" type="text" id="f-country" placeholder="United States" list="clist"/><datalist id="clist"></datalist></div>
     </div>
     <div class="fb">
@@ -243,7 +376,44 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Fredoka",sans-seri
       <div class="mtb-w" id="mwallet"></div>
     </div>
   </div>
-  <div id="mleg">
+  <!-- Stats bar -->
+  <div id="stats-bar">
+    <div class="sb-item"><span class="sb-num" id="stat-holders">0</span> Holders</div>
+    <div class="sb-item"><span class="sb-num" id="stat-countries">0</span> Countries</div>
+    <div class="sb-item"><span class="sb-num" id="stat-stage4">0</span> Stage 4s</div>
+    <div class="sb-item"><span class="sb-num" id="stat-collections">4</span> Collections</div>
+  </div>
+
+  <!-- Leaderboard panel (left) -->
+  <div class="slide-panel left" id="panel-lb">
+    <div class="sp-head">
+      <div class="sp-title">&#127942; Top Holders</div>
+      <button class="sp-close" onclick="togglePanel('lb')">&#x2715;</button>
+    </div>
+    <div class="sp-body" id="lb-body"></div>
+  </div>
+
+  <!-- Activity feed panel (right) -->
+  <div class="slide-panel right" id="panel-af">
+    <div class="sp-head">
+      <div class="sp-title">&#9889; Activity</div>
+      <button class="sp-close" onclick="togglePanel('af')">&#x2715;</button>
+    </div>
+    <div class="sp-body" id="af-body"><div class="af-empty">Waiting for activity...</div></div>
+  </div>
+
+  <!-- Toggle buttons -->
+  <button class="panel-toggle" id="toggle-lb" onclick="togglePanel('lb')" title="Leaderboard">
+    <svg viewBox="0 0 24 24"><path d="M3 3h4v18H3V3zm7 6h4v12h-4V9zm7-3h4v15h-4V6z"/></svg>
+    <span class="pt-label">Board</span>
+  </button>
+  <button class="panel-toggle right-toggle" id="toggle-af" onclick="togglePanel('af')" title="Activity">
+    <svg viewBox="0 0 24 24"><path d="M13 2.05v2.02c3.95.49 7 3.85 7 7.93 0 3.21-1.81 6.14-4.72 7.72L13 17v5h5l-1.22-1.22C19.91 19.07 22 15.76 22 12c0-5.18-3.95-9.45-9-9.95zM11 2.05C5.95 2.55 2 6.82 2 12c0 3.76 2.09 7.07 5.22 8.78L6 22h5v-5l-2.28 2.72C7.81 18.14 6 15.21 6 12c0-4.08 3.05-7.44 7-7.93V2.05z"/></svg>
+    <span class="pt-label">Live</span>
+    <div class="pt-badge" id="af-badge">0</div>
+  </button>
+
+    <div id="mleg">
     <div class="leg-t">Collections</div>
     <div class="leg-r"><div class="leg-d" style="border-color:#6B7280"></div><div class="leg-l">Garbage Bags</div></div>
     <div class="leg-r"><div class="leg-d" style="border-color:#9CA3AF"></div><div class="leg-l">Garbage Cans</div></div>
@@ -498,6 +668,15 @@ function showProfileScreen() {
     document.getElementById("f-tw").value      = myProfile.twitter_handle || "";
     document.getElementById("f-country").value = myProfile.location_country || "";
     document.getElementById("f-state").value   = myProfile.location_state || "";
+    if (document.getElementById("f-discord")) document.getElementById("f-discord").value = myProfile.discord_handle || "";
+    if (myProfile.twitter_verified && document.getElementById("btn-verify-tw")) {
+      document.getElementById("btn-verify-tw").textContent = "&#10003; Verified";
+      document.getElementById("btn-verify-tw").classList.add("verified");
+    }
+    if (myProfile.discord_verified && document.getElementById("btn-verify-dc")) {
+      document.getElementById("btn-verify-dc").textContent = "&#10003; Verified";
+      document.getElementById("btn-verify-dc").classList.add("verified");
+    }
     if (myProfile.profile_picture_url) prevPfp(myProfile.profile_picture_url);
   } else {
     ["f-pfp","f-user","f-bio","f-tw","f-country","f-state"].forEach(function(id) { document.getElementById(id).value = ""; });
@@ -540,9 +719,14 @@ async function saveProfile() {
   if (!coords) coords = await nominatim(country, state);
   if (!coords) coords = {lat:0, lng:0};
   var high = holdings.length ? Math.max.apply(null, holdings) : 1;
+  var discordVal = document.getElementById("f-discord") ? document.getElementById("f-discord").value.trim() : "";
+  var twVerified = document.getElementById("btn-verify-tw") && document.getElementById("btn-verify-tw").classList.contains("verified");
+  var dcVerified = document.getElementById("btn-verify-dc") && document.getElementById("btn-verify-dc").classList.contains("verified");
   var data = {
     wallet_address:wallet.toLowerCase(), username:username, bio:bio,
-    twitter_handle:tw, profile_picture_url:pfp,
+    twitter_handle:tw, discord_handle:discordVal,
+    twitter_verified:twVerified, discord_verified:dcVerified,
+    profile_picture_url:pfp,
     location_country:country, location_state:state,
     latitude:coords.lat, longitude:coords.lng, highest_stage:high,
     stage_1:holdings.indexOf(1)>-1, stage_2:holdings.indexOf(2)>-1,
@@ -591,8 +775,9 @@ async function loadMarkers() {
     Object.values(markers).forEach(function(m) { MAP.removeLayer(m); });
     markers = {};
     res.data.forEach(addMarker);
-    document.getElementById("mcount").textContent = res.data.length;
-    document.getElementById("lcount").textContent = res.data.length;
+    updateStats(res.data);
+    buildLeaderboard(res.data);
+    initActivityFeed();
   } catch(e) { console.warn("loadMarkers:", e); }
 }
 
@@ -665,6 +850,18 @@ function addMarker(p) {
   var nameEl = document.createElement("div");
   nameEl.className = "pp-name";
   nameEl.textContent = p.username || "Anon";
+  if (p.twitter_verified) {
+    var twB = document.createElement("span");
+    twB.className = "vbadge vbadge-tw"; twB.textContent = "𝕏";
+    twB.style.marginLeft = "4px";
+    nameEl.appendChild(twB);
+  }
+  if (p.discord_verified) {
+    var dcB = document.createElement("span");
+    dcB.className = "vbadge vbadge-dc"; dcB.textContent = "DC";
+    dcB.style.marginLeft = "4px";
+    nameEl.appendChild(dcB);
+  }
   var locEl = document.createElement("div");
   locEl.className = "pp-loc";
   locEl.textContent = "📍 " + [p.location_state, p.location_country].filter(Boolean).join(", ");
@@ -749,6 +946,255 @@ async function nominatim(country, state) {
   } catch(e) {}
   return null;
 }
+
+/* ══════════════════════════════════════
+   STATS BAR
+══════════════════════════════════════ */
+function updateStats(profiles) {
+  var countries = new Set();
+  var stage4 = 0;
+  profiles.forEach(function(p) {
+    if (p.location_country) countries.add(p.location_country);
+    if (p.stage_4) stage4++;
+  });
+  var s = document.getElementById("stat-holders");
+  var c = document.getElementById("stat-countries");
+  var s4 = document.getElementById("stat-stage4");
+  if (s)  s.textContent  = profiles.length;
+  if (c)  c.textContent  = countries.size;
+  if (s4) s4.textContent = stage4;
+  document.getElementById("lcount").textContent = profiles.length;
+  document.getElementById("mcount").textContent = profiles.length;
+}
+
+/* ══════════════════════════════════════
+   LEADERBOARD
+══════════════════════════════════════ */
+function buildLeaderboard(profiles) {
+  var sorted = profiles.slice().sort(function(a, b) {
+    var aCount = [a.stage_1,a.stage_2,a.stage_3,a.stage_4].filter(Boolean).length;
+    var bCount = [b.stage_1,b.stage_2,b.stage_3,b.stage_4].filter(Boolean).length;
+    if (bCount !== aCount) return bCount - aCount;
+    return (b.highest_stage||0) - (a.highest_stage||0);
+  });
+
+  var body = document.getElementById("lb-body");
+  if (!body) return;
+  body.innerHTML = "";
+
+  sorted.forEach(function(p, i) {
+    var heldCols = COLS.filter(function(c) {
+      return (c.stage===1&&p.stage_1)||(c.stage===2&&p.stage_2)||(c.stage===3&&p.stage_3)||(c.stage===4&&p.stage_4);
+    });
+
+    var row = document.createElement("div");
+    row.className = "lb-row";
+    row.onclick = function() {
+      if (p.latitude && p.longitude) {
+        MAP.flyTo([p.latitude, p.longitude], 8, {duration:1.2});
+        togglePanel("lb");
+      }
+    };
+
+    // Rank
+    var rank = document.createElement("div");
+    rank.className = "lb-rank" + (i===0?" gold":i===1?" silver":i===2?" bronze":"");
+    rank.textContent = i + 1;
+    row.appendChild(rank);
+
+    // PFP
+    var pfpDiv = document.createElement("div");
+    pfpDiv.className = "lb-pfp";
+    if (p.profile_picture_url) {
+      var img = document.createElement("img");
+      img.src = p.profile_picture_url;
+      img.onerror = function() { pfpDiv.textContent = "🗑️"; };
+      pfpDiv.appendChild(img);
+    } else { pfpDiv.textContent = "🗑️"; }
+    row.appendChild(pfpDiv);
+
+    // Info
+    var info = document.createElement("div");
+    info.className = "lb-info";
+
+    var nameRow = document.createElement("div");
+    nameRow.className = "lb-name";
+    nameRow.textContent = p.username || "Anon";
+    // Verified badges
+    if (p.twitter_verified) {
+      var tw = document.createElement("span");
+      tw.className = "vbadge vbadge-tw"; tw.textContent = "𝕏";
+      nameRow.appendChild(tw);
+    }
+    if (p.discord_verified) {
+      var dc = document.createElement("span");
+      dc.className = "vbadge vbadge-dc"; dc.textContent = "DC";
+      nameRow.appendChild(dc);
+    }
+    info.appendChild(nameRow);
+
+    var loc = document.createElement("div");
+    loc.className = "lb-loc";
+    loc.textContent = "📍 " + [p.location_state, p.location_country].filter(Boolean).join(", ");
+    info.appendChild(loc);
+    row.appendChild(info);
+
+    // Stage pips
+    var pips = document.createElement("div");
+    pips.className = "lb-stages";
+    heldCols.forEach(function(c) {
+      var pip = document.createElement("div");
+      pip.className = "lb-pip";
+      pip.style.background = c.color;
+      pip.title = c.name;
+      pips.appendChild(pip);
+    });
+    row.appendChild(pips);
+
+    body.appendChild(row);
+  });
+}
+
+/* ══════════════════════════════════════
+   ACTIVITY FEED
+══════════════════════════════════════ */
+var afCount = 0;
+var realtimeSub = null;
+
+function initActivityFeed() {
+  if (!sb) return;
+  var body = document.getElementById("af-body");
+
+  // Subscribe to real-time inserts + updates
+  realtimeSub = sb
+    .channel("gf_activity")
+    .on("postgres_changes", {
+      event: "INSERT",
+      schema: "public",
+      table: "gf_profiles"
+    }, function(payload) {
+      addActivityItem(payload.new, "joined");
+    })
+    .on("postgres_changes", {
+      event: "UPDATE",
+      schema: "public",
+      table: "gf_profiles"
+    }, function(payload) {
+      addActivityItem(payload.new, "updated");
+    })
+    .subscribe();
+}
+
+function addActivityItem(profile, type) {
+  var body = document.getElementById("af-body");
+  if (!body) return;
+
+  // Remove empty state
+  var empty = body.querySelector(".af-empty");
+  if (empty) empty.remove();
+
+  var row = document.createElement("div");
+  row.className = "af-row";
+
+  var pfpDiv = document.createElement("div");
+  pfpDiv.className = "af-pfp";
+  if (profile.profile_picture_url) {
+    var img = document.createElement("img");
+    img.src = profile.profile_picture_url;
+    img.onerror = function() { pfpDiv.textContent = "🗑️"; };
+    pfpDiv.appendChild(img);
+  } else { pfpDiv.textContent = "🗑️"; }
+  row.appendChild(pfpDiv);
+
+  var text = document.createElement("div");
+  text.className = "af-text";
+  var name = document.createElement("div");
+  name.className = "af-name";
+  name.textContent = profile.username || "Anon";
+  var desc = document.createElement("div");
+  desc.className = "af-desc";
+  var loc = [profile.location_state, profile.location_country].filter(Boolean).join(", ");
+  desc.textContent = type === "joined"
+    ? "joined the map" + (loc ? " from " + loc : "")
+    : "updated their profile";
+  text.appendChild(name);
+  text.appendChild(desc);
+  row.appendChild(text);
+
+  var time = document.createElement("div");
+  time.className = "af-time";
+  time.textContent = "now";
+  row.appendChild(time);
+
+  // Prepend to top
+  body.insertBefore(row, body.firstChild);
+
+  // Badge counter when panel is closed
+  if (!document.getElementById("panel-af").classList.contains("open")) {
+    afCount++;
+    var badge = document.getElementById("af-badge");
+    if (badge) { badge.textContent = afCount; badge.classList.add("show"); }
+  }
+}
+
+/* ══════════════════════════════════════
+   PANEL TOGGLES
+══════════════════════════════════════ */
+function togglePanel(id) {
+  var panel = document.getElementById("panel-" + id);
+  if (!panel) return;
+  var isOpen = panel.classList.contains("open");
+  // Close all panels first
+  document.querySelectorAll(".slide-panel").forEach(function(p) { p.classList.remove("open"); });
+  if (!isOpen) {
+    panel.classList.add("open");
+    // Clear activity badge when feed opens
+    if (id === "af") {
+      afCount = 0;
+      var badge = document.getElementById("af-badge");
+      if (badge) { badge.textContent = "0"; badge.classList.remove("show"); }
+    }
+  }
+}
+
+/* ══════════════════════════════════════
+   VERIFICATION
+══════════════════════════════════════ */
+function verifyTwitter() {
+  var handle = document.getElementById("f-tw").value.trim().replace("@","");
+  if (!handle) { showToast("Enter your Twitter handle first.", "err"); return; }
+  var url = "https://x.com/" + handle;
+  window.open(url, "_blank");
+  // After user confirms, mark as verified
+  setTimeout(function() {
+    if (confirm("Did you confirm this is your Twitter account? (@" + handle + ")")) {
+      var btn = document.getElementById("btn-verify-tw");
+      btn.textContent = "✓ Verified";
+      btn.classList.add("verified");
+      var status = document.getElementById("tw-verify-status");
+      if (status) { status.textContent = "Twitter verified ✓"; status.style.color = "var(--lime-dark)"; }
+    }
+  }, 1500);
+}
+
+function verifyDiscord() {
+  var handle = document.getElementById("f-discord").value.trim();
+  if (!handle) { showToast("Enter your Discord username first.", "err"); return; }
+  // Open the Garbage Friends Discord server
+  window.open("https://discord.gg/typical-friends-1066053691024621608", "_blank");
+  setTimeout(function() {
+    if (confirm("Are you a member of the Garbage Friends Discord as @" + handle + "?")) {
+      var btn = document.getElementById("btn-verify-dc");
+      btn.textContent = "✓ Verified";
+      btn.classList.add("verified");
+      var status = document.getElementById("dc-verify-status");
+      if (status) { status.textContent = "Discord verified ✓"; status.style.color = "#5865F2"; }
+    }
+  }, 1500);
+}
+
+function showToast(msg, type) { toast(msg, type); }
+
 
 var toastTimer;
 function toast(msg, type) {
