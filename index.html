@@ -364,7 +364,7 @@ async function connectWallet() {
   }
   var btn = document.getElementById("btn-conn");
   btn.disabled = true;
-  btn.innerHTML = "<span class="spin"></span> Connecting...";
+  btn.innerHTML = '<span class="spin"></span> Connecting...';
   document.getElementById("l-err").style.display = "none";
   try {
     var accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -429,7 +429,7 @@ function showProfileScreen() {
   bw.innerHTML = "";
   holdings.forEach(function(s) {
     var c = COLS.find(function(x) { return x.stage === s; });
-    if (c) bw.innerHTML += "<span class="pf-badge" style="background:" + c.color + "18;border-color:" + c.color + ";color:" + c.color + ";">" + c.name + "</span>";
+    if (c) bw.innerHTML += '<span class="pf-badge" style="background:' + c.color + '18;border-color:' + c.color + ';color:' + c.color + ';">' + c.name + '</span>';
   });
   if (myProfile) {
     document.getElementById("f-pfp").value     = myProfile.profile_picture_url || "";
@@ -470,7 +470,7 @@ async function saveProfile() {
   if (!username) { fe.textContent = "Username is required."; fe.style.display = "block"; return; }
   if (!country)  { fe.textContent = "Country is required.";  fe.style.display = "block"; return; }
   btn.disabled = true;
-  document.getElementById("savetxt").innerHTML = "<span class="spin"></span> Saving...";
+  document.getElementById("savetxt").innerHTML = '<span class="spin"></span> Saving...';
   var coords = getCoords(country, state);
   if (!coords) coords = await nominatim(country, state);
   if (!coords) coords = {lat:0, lng:0};
