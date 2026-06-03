@@ -267,6 +267,16 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Fredoka",sans-seri
 }
 .btn-verify:hover { border-color:var(--purple); color:var(--purple); }
 .btn-verify.verified { border-color:var(--lime-dark); color:var(--lime-dark); background:#eaf8d8; }
+
+/* Inline verification confirm */
+.verify-confirm { margin-top:6px; background:var(--bgc); border:1.5px solid var(--border); border-radius:10px; padding:10px 12px; }
+.verify-confirm.hidden { display:none; }
+.vc-msg { font-size:12px; font-weight:500; color:var(--textm); margin-bottom:8px; }
+.vc-btns { display:flex; gap:8px; }
+.vc-yes { flex:1; padding:8px; background:var(--purple); border:none; border-radius:8px; font-family:"Fredoka One",cursive; font-size:13px; color:#fff; cursor:pointer; transition:background .2s; }
+.vc-yes:hover { background:var(--purple-dark); }
+.vc-no  { padding:8px 14px; background:transparent; border:1.5px solid var(--border); border-radius:8px; font-size:12px; font-weight:600; color:var(--textd); cursor:pointer; transition:all .2s; }
+.vc-no:hover { border-color:var(--text); color:var(--text); }
 </style>
 </head>
 <body>
@@ -339,7 +349,14 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Fredoka",sans-seri
         <label class="fl">Twitter / X</label>
         <div class="verify-row">
           <input class="fi" type="text" id="f-tw" placeholder="@username"/>
-          <button class="btn-verify" id="btn-verify-tw" type="button" onclick="verifyTwitter()">Verify</button>
+          <button class="btn-verify" id="btn-verify-tw" type="button" onclick="startVerify('tw')">Verify</button>
+        </div>
+        <div class="verify-confirm hidden" id="vc-tw">
+          <div class="vc-msg" id="vc-tw-msg"></div>
+          <div class="vc-btns">
+            <button class="vc-yes" onclick="confirmVerify('tw')">&#10003; Yes, that&#39;s me</button>
+            <button class="vc-no" onclick="cancelVerify('tw')">Cancel</button>
+          </div>
         </div>
         <div class="fh" id="tw-verify-status"></div>
       </div>
@@ -347,7 +364,14 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Fredoka",sans-seri
         <label class="fl">Discord</label>
         <div class="verify-row">
           <input class="fi" type="text" id="f-discord" placeholder="username"/>
-          <button class="btn-verify" id="btn-verify-dc" type="button" onclick="verifyDiscord()">Verify</button>
+          <button class="btn-verify" id="btn-verify-dc" type="button" onclick="startVerify('dc')">Verify</button>
+        </div>
+        <div class="verify-confirm hidden" id="vc-dc">
+          <div class="vc-msg" id="vc-dc-msg"></div>
+          <div class="vc-btns">
+            <button class="vc-yes" onclick="confirmVerify('dc')">&#10003; Yes, that&#39;s me</button>
+            <button class="vc-no" onclick="cancelVerify('dc')">Cancel</button>
+          </div>
         </div>
         <div class="fh" id="dc-verify-status"></div>
       </div>
@@ -371,7 +395,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Fredoka",sans-seri
   <div id="mtb">
     <!-- centered nav title image -->
     <img id="img-nav" src="" alt="Garbage Friends World Map"
-      style="position:absolute;left:50%;transform:translateX(-50%);height:36px;top:8px;pointer-events:none;"/>
+      style="position:absolute;left:50%;transform:translateX(-50%);height:32px;top:10px;pointer-events:none;max-width:min(460px,55vw);width:auto;"/>
     <div class="mtb-r" style="margin-left:auto;">
       <div class="mtb-c"><span id="mcount">0</span> on the map</div>
       <div class="mtb-w" id="mwallet"></div>
@@ -1178,37 +1202,40 @@ function togglePanel(id) {
 /* ══════════════════════════════════════
    VERIFICATION
 ══════════════════════════════════════ */
-function verifyTwitter() {
-  var handle = document.getElementById("f-tw").value.trim().replace("@","");
-  if (!handle) { showToast("Enter your Twitter handle first.", "err"); return; }
-  var url = "https://x.com/" + handle;
-  window.open(url, "_blank");
-  // After user confirms, mark as verified
-  setTimeout(function() {
-    if (confirm("Did you confirm this is your Twitter account? (@" + handle + ")")) {
-      var btn = document.getElementById("btn-verify-tw");
-      btn.textContent = "✓ Verified";
-      btn.classList.add("verified");
-      var status = document.getElementById("tw-verify-status");
-      if (status) { status.textContent = "Twitter verified ✓"; status.style.color = "var(--lime-dark)"; }
-    }
-  }, 1500);
+function startVerify(type) {
+  if (type === "tw") {
+    var handle = document.getElementById("f-tw").value.trim().replace("@","");
+    if (!handle) { toast("Enter your Twitter / X handle first.", "err"); return; }
+    document.getElementById("vc-tw-msg").textContent = 'Is @' + handle + ' your Twitter / X account?';
+    document.getElementById("vc-tw").classList.remove("hidden");
+  } else {
+    var handle = document.getElementById("f-discord").value.trim();
+    if (!handle) { toast("Enter your Discord username first.", "err"); return; }
+    document.getElementById("vc-dc-msg").textContent = 'Is "' + handle + '" your Discord username?';
+    document.getElementById("vc-dc").classList.remove("hidden");
+  }
 }
 
-function verifyDiscord() {
-  var handle = document.getElementById("f-discord").value.trim();
-  if (!handle) { showToast("Enter your Discord username first.", "err"); return; }
-  // Open the Garbage Friends Discord server
-  window.open("https://discord.gg/typical-friends-1066053691024621608", "_blank");
-  setTimeout(function() {
-    if (confirm("Are you a member of the Garbage Friends Discord as @" + handle + "?")) {
-      var btn = document.getElementById("btn-verify-dc");
-      btn.textContent = "✓ Verified";
-      btn.classList.add("verified");
-      var status = document.getElementById("dc-verify-status");
-      if (status) { status.textContent = "Discord verified ✓"; status.style.color = "#5865F2"; }
-    }
-  }, 1500);
+function confirmVerify(type) {
+  if (type === "tw") {
+    var btn = document.getElementById("btn-verify-tw");
+    btn.textContent = "✓ Verified";
+    btn.classList.add("verified");
+    var st = document.getElementById("tw-verify-status");
+    if (st) { st.textContent = "Twitter / X verified ✓"; st.style.color = "var(--lime-dark)"; }
+    document.getElementById("vc-tw").classList.add("hidden");
+  } else {
+    var btn = document.getElementById("btn-verify-dc");
+    btn.textContent = "✓ Verified";
+    btn.classList.add("verified");
+    var st = document.getElementById("dc-verify-status");
+    if (st) { st.textContent = "Discord verified ✓"; st.style.color = "#5865F2"; }
+    document.getElementById("vc-dc").classList.add("hidden");
+  }
+}
+
+function cancelVerify(type) {
+  document.getElementById("vc-" + type).classList.add("hidden");
 }
 
 function showToast(msg, type) { toast(msg, type); }
