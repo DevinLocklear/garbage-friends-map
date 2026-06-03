@@ -71,6 +71,7 @@ html, body {
   font-size: 11px; font-weight: 600;
   cursor: pointer; letter-spacing: 0.5px;
   transition: background 0.2s;
+  white-space: nowrap;
 }
 #btn-connect:hover { background: rgba(74,222,128,0.1); }
 #btn-connect:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -124,7 +125,7 @@ html, body {
 }
 .leaflet-popup-tip { background: #141414 !important; }
 .leaflet-popup-content { margin: 0 !important; }
-.popup-box { padding: 14px; width: 210px; }
+.popup-box { padding: 14px; width: 220px; }
 .popup-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .popup-img {
   width: 40px; height: 40px; border-radius: 50%;
@@ -136,9 +137,13 @@ html, body {
 .popup-name { font-size: 13px; font-weight: 600; color: #f0f0f0; }
 .popup-loc { font-size: 10px; color: var(--grey); margin-top: 1px; }
 .popup-bio { font-size: 11px; color: #aaa; line-height: 1.5; margin-bottom: 8px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.popup-foot { display: flex; justify-content: space-between; align-items: center; }
-.popup-stages { display: flex; gap: 3px; }
-.spip { padding: 2px 6px; border-radius: 4px; font-size: 8px; font-weight: 700; border: 1px solid; }
+.popup-foot { display: flex; flex-direction: column; gap: 6px; }
+.popup-stages { display: flex; flex-wrap: wrap; gap: 3px; }
+.spip {
+  padding: 2px 7px; border-radius: 4px;
+  font-size: 9px; font-weight: 600; border: 1px solid;
+  white-space: nowrap;
+}
 .popup-tw { font-size: 10px; color: var(--grey); text-decoration: none; }
 .popup-tw:hover { color: #fff; }
 
@@ -147,11 +152,12 @@ html, body {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,0.75); z-index: 600;
   align-items: center; justify-content: center;
+  padding: 16px;
 }
 .overlay.open { display: flex; }
 .panel {
   background: #111; border: 1px solid #2a2a2a;
-  border-radius: 14px; width: min(420px, 94vw);
+  border-radius: 14px; width: min(420px, 100%);
   max-height: 90vh; overflow-y: auto;
   box-shadow: 0 16px 48px rgba(0,0,0,0.9); position: relative;
 }
@@ -178,7 +184,10 @@ html, body {
 .field-hint { font-size: 9px; color: #555; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .stages-wrap { display: flex; gap: 6px; flex-wrap: wrap; }
-.sbadge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; border: 1px solid; }
+.sbadge {
+  padding: 5px 12px; border-radius: 20px;
+  font-size: 10px; font-weight: 600; border: 1px solid;
+}
 .pfp-row { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
 .pfp-circle {
   width: 56px; height: 56px; border-radius: 50%;
@@ -261,11 +270,11 @@ html, body {
 </div>
 
 <div id="legend">
-  <div class="leg-title">Stages</div>
-  <div class="leg-row"><div class="leg-dot" style="border-color:#6B7280"></div><div class="leg-label">Stage 1 — Garbage Bags</div></div>
-  <div class="leg-row"><div class="leg-dot" style="border-color:#9CA3AF"></div><div class="leg-label">Stage 2 — Garbage Cans</div></div>
-  <div class="leg-row"><div class="leg-dot" style="border-color:#F59E0B"></div><div class="leg-label">Stage 3 — Walking Cans</div></div>
-  <div class="leg-row"><div class="leg-dot" style="border-color:#4ADE80"></div><div class="leg-label">Stage 4 — Garbage Friends</div></div>
+  <div class="leg-title">Collections</div>
+  <div class="leg-row"><div class="leg-dot" style="border-color:#6B7280"></div><div class="leg-label">Garbage Bags</div></div>
+  <div class="leg-row"><div class="leg-dot" style="border-color:#9CA3AF"></div><div class="leg-label">Garbage Cans</div></div>
+  <div class="leg-row"><div class="leg-dot" style="border-color:#F59E0B"></div><div class="leg-label">Walking Cans</div></div>
+  <div class="leg-row"><div class="leg-dot" style="border-color:#4ADE80"></div><div class="leg-label">Garbage Friends</div></div>
 </div>
 
 <!-- NOT HOLDER -->
@@ -275,7 +284,7 @@ html, body {
       <div class="big-icon">🗑️</div>
       <div class="panel-title" style="margin-bottom:8px;">No Garbage Friends Found</div>
       <div style="font-size:12px;color:var(--grey);line-height:1.6;margin-bottom:20px;">
-        Your wallet doesn't hold any Stage 1–4 Garbage Friends.<br>Pick one up on OpenSea to join the map.
+        Your wallet doesn't hold any Garbage Friends NFTs.<br>Pick one up on OpenSea to join the map.
       </div>
       <a href="https://opensea.io/collection/garbage-friends-main" target="_blank">
         <button class="btn-main">View on OpenSea</button>
@@ -297,7 +306,7 @@ html, body {
     </div>
     <div class="panel-body">
       <div class="field">
-        <label>Your Garbage Friends</label>
+        <label>Your Collections</label>
         <div class="stages-wrap" id="stage-badges"></div>
       </div>
       <div class="pfp-row">
@@ -348,13 +357,12 @@ html, body {
   <img id="my-btn-img" src="" onerror="this.style.display='none'"/>
   <div>
     <div id="my-btn-name">My Profile</div>
-    <div id="my-btn-sub">Click to edit</div>
+    <div id="my-btn-sub">Edit profile</div>
   </div>
 </div>
 
 <div id="toast"></div>
 
-<!-- SCRIPTS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
@@ -366,6 +374,7 @@ var SUPABASE_URL = 'https://buylvfnubwaovmlocwjy.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1eWx2Zm51Yndhb3ZtbG9jd2p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MzAxNzYsImV4cCI6MjA5NjAwNjE3Nn0._u3T_8vday1id0s7PY62fnKntisjxkm1A_UAPv9uo1g';
 var API_ENDPOINT = '/api/check-holdings';
 
+// Collections — name is displayed everywhere instead of "Stage X"
 var COLS = [
   { stage:1, slug:'garbage-bags-official', name:'Garbage Bags',    color:'#6B7280' },
   { stage:2, slug:'garbage-cans-1',        name:'Garbage Cans',    color:'#9CA3AF' },
@@ -398,9 +407,9 @@ var CC = {
   'Greece':{lat:39.07,lng:21.82},'Israel':{lat:31.04,lng:34.85},
   'Colombia':{lat:4.57,lng:-74.29},'Chile':{lat:-35.67,lng:-71.54},
   'Vietnam':{lat:14.05,lng:108.27},'Malaysia':{lat:4.21,lng:101.97},
-  'Pakistan':{lat:30.37,lng:69.34},'Bangladesh':{lat:23.68,lng:90.35},
-  'Egypt':{lat:26.82,lng:30.80},'Saudi Arabia':{lat:23.88,lng:45.08},
-  'Ghana':{lat:7.94,lng:-1.02},'Kenya':{lat:-0.02,lng:37.90},
+  'Pakistan':{lat:30.37,lng:69.34},'Egypt':{lat:26.82,lng:30.80},
+  'Saudi Arabia':{lat:23.88,lng:45.08},'Ghana':{lat:7.94,lng:-1.02},
+  'Kenya':{lat:-0.02,lng:37.90},'Bangladesh':{lat:23.68,lng:90.35},
 };
 var SC = {
   'Alabama':{lat:32.80,lng:-86.79},'Alaska':{lat:64.20,lng:-153.39},
@@ -425,6 +434,7 @@ var SC = {
   'Texas':{lat:31.96,lng:-99.90},'Utah':{lat:39.32,lng:-111.09},
   'Virginia':{lat:37.76,lng:-78.16},'Washington':{lat:47.75,lng:-120.74},
   'Wisconsin':{lat:44.26,lng:-89.61},'Wyoming':{lat:43.07,lng:-107.29},
+  'South Carolina':{lat:33.85,lng:-80.94},
 };
 
 // ══════════════════════════════════════
@@ -448,40 +458,22 @@ window.onload = function() {
 };
 
 function initSupabase() {
-  if (SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
-    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  }
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 }
 
 function initMap() {
-  // Strict world bounds — prevents white space above/below
-  var worldBounds = L.latLngBounds(
-    L.latLng(-75, -220),
-    L.latLng(83,   220)
-  );
-
+  var worldBounds = L.latLngBounds(L.latLng(-75, -220), L.latLng(83, 220));
   MAP = L.map('map', {
-    center: [25, 10],
-    zoom: 2,
-    minZoom: 2,
-    maxZoom: 15,
+    center: [25, 10], zoom: 2, minZoom: 2, maxZoom: 15,
     maxBounds: worldBounds,
-    maxBoundsViscosity: 1.0,   // hard stop at bounds — no rubber band
+    maxBoundsViscosity: 1.0,
     worldCopyJump: false,
     bounceAtZoomLimits: false,
   });
-
-  L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    {
-      attribution: '&copy; OpenStreetMap &copy; CARTO',
-      subdomains: 'abcd',
-      maxZoom: 18,
-      noWrap: false,
-    }
-  ).addTo(MAP);
-
-  // Clamp to bounds on every move so there's zero overshoot
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    subdomains: 'abcd', maxZoom: 18,
+  }).addTo(MAP);
   MAP.on('drag', function() {
     MAP.panInsideBounds(worldBounds, { animate: false });
   });
@@ -491,8 +483,7 @@ function fillCountryList() {
   var dl = document.getElementById('clist');
   Object.keys(CC).forEach(function(c) {
     var o = document.createElement('option');
-    o.value = c;
-    dl.appendChild(o);
+    o.value = c; dl.appendChild(o);
   });
 }
 
@@ -500,10 +491,6 @@ function fillCountryList() {
 // LOAD PROFILES
 // ══════════════════════════════════════
 async function loadProfiles() {
-  if (!sb) {
-    document.getElementById('num').textContent = '0';
-    return;
-  }
   try {
     var res = await sb.from('gf_profiles').select('*');
     if (res.error) throw res.error;
@@ -532,21 +519,20 @@ function addMarker(p) {
     className: '',
     html: '<div class="gf-marker-wrap" style="border-color:' + color + ';">' +
           '<div class="gf-marker-inner">' + inner + '</div>' +
-          '<div class="gf-badge" style="background:' + color + ';">' + s + '</div>' +
+          '<div class="gf-badge" style="background:' + color + ';"></div>' +
           '</div>',
-    iconSize:    [42, 42],
-    iconAnchor:  [21, 21],
-    popupAnchor: [0, -26],
+    iconSize: [42,42], iconAnchor: [21,21], popupAnchor: [0,-26],
   });
 
-  var stages = [];
-  if (p.stage_1) stages.push({n:1,c:'#6B7280'});
-  if (p.stage_2) stages.push({n:2,c:'#9CA3AF'});
-  if (p.stage_3) stages.push({n:3,c:'#F59E0B'});
-  if (p.stage_4) stages.push({n:4,c:'#4ADE80'});
-  var pips = stages.map(function(st) {
-    return '<span class="spip" style="background:' + st.c + '20;border-color:' + st.c + ';color:' + st.c + ';">S' + st.n + '</span>';
-  }).join('');
+  // Build collection name pips
+  var pips = '';
+  COLS.forEach(function(c) {
+    var hasIt = (c.stage === 1 && p.stage_1) || (c.stage === 2 && p.stage_2) ||
+                (c.stage === 3 && p.stage_3) || (c.stage === 4 && p.stage_4);
+    if (hasIt) {
+      pips += '<span class="spip" style="background:' + c.color + '20;border-color:' + c.color + ';color:' + c.color + ';">' + c.name + '</span>';
+    }
+  });
 
   var imgEl = p.profile_picture_url
     ? '<img src="' + p.profile_picture_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.outerHTML=\'🗑️\'"/>'
@@ -565,54 +551,41 @@ function addMarker(p) {
       '<div class="popup-loc">📍 ' + loc + '</div></div>' +
     '</div>' +
     (p.bio ? '<div class="popup-bio">' + p.bio + '</div>' : '') +
-    '<div class="popup-foot"><div class="popup-stages">' + pips + '</div>' + twEl + '</div>' +
-    '</div>';
+    '<div class="popup-foot">' +
+      '<div class="popup-stages">' + pips + '</div>' +
+      twEl +
+    '</div></div>';
 
   var m = L.marker([p.latitude, p.longitude], { icon:icon });
-  m.bindPopup(popup, { maxWidth:240 });
+  m.bindPopup(popup, { maxWidth:260 });
   m.addTo(MAP);
   markers[p.id] = m;
 }
 
 // ══════════════════════════════════════
-// WALLET — uses window.ethereum directly
-// No ethers.js needed for connection
+// WALLET
 // ══════════════════════════════════════
 async function connectWallet() {
   if (!window.ethereum) {
-    toast('MetaMask not found. Please install the MetaMask extension.', 'err');
+    toast('MetaMask not found. Please install it.', 'err');
     return;
   }
-
   var btn = document.getElementById('btn-connect');
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span> Connecting...';
-
   try {
-    // Request accounts directly — no library needed
-    var accounts = await window.ethereum.request({
-      method: 'eth_requestAccounts'
-    });
-
-    if (!accounts || accounts.length === 0) {
-      throw new Error('No accounts returned');
-    }
-
+    var accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    if (!accounts || accounts.length === 0) throw new Error('No accounts');
     wallet = accounts[0];
     btn.textContent = wallet.slice(0,6) + '...' + wallet.slice(-4);
     btn.classList.add('connected');
     btn.disabled = false;
-
     await checkHoldings();
-
   } catch(e) {
     btn.textContent = 'Connect Wallet';
     btn.classList.remove('connected');
     btn.disabled = false;
-    // Code 4001 = user rejected — don't show error
-    if (e.code !== 4001) {
-      toast('Connection failed: ' + (e.message || 'Try again.'), 'err');
-    }
+    if (e.code !== 4001) toast('Connection failed. Try again.', 'err');
   }
 }
 
@@ -620,38 +593,29 @@ async function connectWallet() {
 // HOLDINGS
 // ══════════════════════════════════════
 async function checkHoldings() {
-  toast('Checking your Garbage Friends...', '');
+  toast('Checking your collections...', '');
   holdings = [];
-
   try {
     var res = await fetch(API_ENDPOINT + '?wallet=' + wallet);
     if (res.ok) {
       var data = await res.json();
       holdings = data.holdings || [];
-    } else {
-      throw new Error('API ' + res.status);
-    }
+    } else { throw new Error('API ' + res.status); }
   } catch(e) {
-    console.warn('API route failed, trying OpenSea directly:', e.message);
+    console.warn('API failed, trying direct:', e.message);
     holdings = await checkDirect();
   }
 
-  if (holdings.length === 0) {
-    openOv('ov-noholder');
+  if (holdings.length === 0) { openOv('ov-noholder'); return; }
+
+  var r = await sb.from('gf_profiles').select('*').eq('wallet_address', wallet.toLowerCase()).maybeSingle();
+  if (r.data) {
+    myProfile = r.data;
+    showMyBtn(r.data);
+    toast('Welcome back, ' + r.data.username + '!', 'ok');
+    if (r.data.latitude) MAP.flyTo([r.data.latitude, r.data.longitude], 6, { duration:1.5 });
     return;
   }
-
-  if (sb) {
-    var r = await sb.from('gf_profiles').select('*').eq('wallet_address', wallet.toLowerCase()).maybeSingle();
-    if (r.data) {
-      myProfile = r.data;
-      showMyBtn(r.data);
-      toast('Welcome back, ' + r.data.username + '!', 'ok');
-      if (r.data.latitude) MAP.flyTo([r.data.latitude, r.data.longitude], 6, { duration:1.5 });
-      return;
-    }
-  }
-
   openProfilePanel(false);
 }
 
@@ -671,18 +635,21 @@ async function checkDirect() {
 }
 
 // ══════════════════════════════════════
-// PROFILE
+// PROFILE PANEL
 // ══════════════════════════════════════
 function openProfilePanel(isEdit) {
   document.getElementById('ptitle').textContent  = isEdit ? 'Edit Your Profile' : 'Create Your Profile';
   document.getElementById('psub').textContent    = isEdit ? 'Update your details' : "You'll appear on the world map";
   document.getElementById('savetxt').textContent = isEdit ? 'Update Profile' : 'Save & Go Live on Map';
 
+  // Show collection name badges
   var bw = document.getElementById('stage-badges');
   bw.innerHTML = '';
   holdings.forEach(function(s) {
     var col = COLS.find(function(c) { return c.stage === s; });
-    bw.innerHTML += '<span class="sbadge" style="background:' + col.color + '20;border-color:' + col.color + ';color:' + col.color + ';">Stage ' + s + ' — ' + col.name + '</span>';
+    if (col) {
+      bw.innerHTML += '<span class="sbadge" style="background:' + col.color + '20;border-color:' + col.color + ';color:' + col.color + ';">' + col.name + '</span>';
+    }
   });
 
   if (isEdit && myProfile) {
@@ -694,12 +661,9 @@ function openProfilePanel(isEdit) {
     document.getElementById('f-state').value   = myProfile.location_state || '';
     if (myProfile.profile_picture_url) prevPfp(myProfile.profile_picture_url);
   } else {
-    document.getElementById('f-pfp').value     = '';
-    document.getElementById('f-user').value    = '';
-    document.getElementById('f-bio').value     = '';
-    document.getElementById('f-tw').value      = '';
-    document.getElementById('f-country').value = '';
-    document.getElementById('f-state').value   = '';
+    ['f-pfp','f-user','f-bio','f-tw','f-country','f-state'].forEach(function(id) {
+      document.getElementById(id).value = '';
+    });
     document.getElementById('pfp-prev').innerHTML = '🗑️';
   }
 
@@ -710,11 +674,9 @@ function openProfilePanel(isEdit) {
 
 function prevPfp(url) {
   var el = document.getElementById('pfp-prev');
-  if (url) {
-    el.innerHTML = '<img src="' + url + '" onerror="this.parentNode.innerHTML=\'🗑️\'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
-  } else {
-    el.innerHTML = '🗑️';
-  }
+  el.innerHTML = url
+    ? '<img src="' + url + '" onerror="this.parentNode.innerHTML=\'🗑️\'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>'
+    : '🗑️';
 }
 
 async function saveProfile() {
@@ -760,15 +722,11 @@ async function saveProfile() {
   };
 
   try {
-    if (sb) {
-      var r = await sb.from('gf_profiles').upsert(data, { onConflict:'wallet_address' }).select().single();
-      if (r.error) throw r.error;
-      myProfile = r.data;
-    } else {
-      myProfile = Object.assign({ id:'local_' + Date.now() }, data);
-    }
+    var r = await sb.from('gf_profiles').upsert(data, { onConflict:'wallet_address' }).select().single();
+    if (r.error) throw r.error;
+    myProfile = r.data;
 
-    if (myProfile && markers[myProfile.id]) {
+    if (markers[myProfile.id]) {
       MAP.removeLayer(markers[myProfile.id]);
       delete markers[myProfile.id];
     }
@@ -792,16 +750,17 @@ async function saveProfile() {
 
 function showErr(msg) {
   var el = document.getElementById('ferr');
-  el.textContent   = msg;
-  el.style.display = 'block';
+  el.textContent = msg; el.style.display = 'block';
 }
 
 function showMyBtn(p) {
   var img = document.getElementById('my-btn-img');
+  // Show collection name for highest stage
+  var col = COLS.find(function(c) { return c.stage === (p.highest_stage||1); });
   document.getElementById('my-btn-name').textContent = p.username || 'My Profile';
-  document.getElementById('my-btn-sub').textContent  = 'Stage ' + (p.highest_stage||1) + ' holder';
+  document.getElementById('my-btn-sub').textContent  = col ? col.name + ' holder' : 'Holder';
   if (p.profile_picture_url) {
-    img.src          = p.profile_picture_url;
+    img.src = p.profile_picture_url;
     img.style.display = 'block';
   }
   document.getElementById('my-btn').classList.add('show');
@@ -850,9 +809,8 @@ function closeOv(id) { document.getElementById(id).classList.remove('open'); }
 
 var toastTimer;
 function toast(msg, type) {
-  var el    = document.getElementById('toast');
-  el.textContent = msg;
-  el.className   = 'show ' + type;
+  var el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'show ' + type;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(function() { el.className = ''; }, 3000);
 }
