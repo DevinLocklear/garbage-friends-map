@@ -4,360 +4,447 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Garbage Friends — World Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <style>
 :root {
-  --green: #4ADE80;
-  --green-dim: #166534;
-  --bg: #0A0A0A;
-  --card: #141414;
-  --border: #2A2A2A;
-  --white: #F0F0F0;
-  --grey: #888888;
-  --s1: #6B7280;
-  --s2: #9CA3AF;
-  --s3: #F59E0B;
-  --s4: #4ADE80;
+  --lime:       #6FD038;
+  --lime-dark:  #4BAD20;
+  --purple:     #5B4FCC;
+  --purple-dark:#3E35A8;
+  --bg:         #E8EDCE;
+  --bg2:        #EEF3D8;
+  --bg-card:    #F5F8EC;
+  --text:       #1A2010;
+  --text-mid:   #3A4E2A;
+  --text-muted: #6A7E5A;
+  --border:     #C8DC98;
+  --dark:       #070A07;
+  --dcard:      #141A14;
+  --dborder:    #1E2A1E;
+  --dtext:      #E8F0D0;
+  --dgrey:      #5A7A5A;
 }
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body {
-  width: 100%; height: 100%;
-  background: #0a0a0a;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: var(--white);
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { width:100%; height:100%; overflow:hidden; font-family:'Fredoka', sans-serif; color:var(--text); }
+
+/* ─── SCREENS ─── */
+.screen { position:fixed; inset:0; z-index:10; transition:opacity 0.5s ease; }
+.screen.hidden { opacity:0; pointer-events:none; }
+
+/* ══════════════════════════════
+   LANDING
+══════════════════════════════ */
+#screen-landing {
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
+  padding: 16px 20px 70px;
+  gap: 0;
 }
-#map {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  z-index: 1;
-  background: #0a0a0a;
-}
-.leaflet-control-zoom a {
-  background: #1a1a1a !important;
-  color: #fff !important;
-  border-color: #333 !important;
-}
-.leaflet-control-attribution {
-  background: rgba(0,0,0,0.6) !important;
-  color: #444 !important;
-  font-size: 9px !important;
-}
-.leaflet-control-attribution a { color: #444 !important; }
 
-/* TOP BAR */
-#topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0; height: 52px;
-  background: rgba(10,10,10,0.95);
-  border-bottom: 1px solid #1f1f1f;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 18px;
-  z-index: 500;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+/* Subtle dot texture */
+#screen-landing::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(75,173,32,0.15) 1px, transparent 1px);
+  background-size: 30px 30px;
+  pointer-events: none;
 }
-.logo { display: flex; align-items: center; gap: 10px; }
-.logo-text { font-size: 13px; font-weight: 700; }
-.logo-sub { font-size: 9px; color: var(--grey); letter-spacing: 2px; text-transform: uppercase; }
-.count { font-size: 10px; color: var(--grey); }
-.count span { color: var(--green); font-weight: 600; }
-#btn-connect {
-  padding: 8px 18px;
+
+/* ── BANNER LOGO ── */
+.land-banner {
+  width: min(680px, 94vw);
+  position: relative; z-index: 2;
+  /* blend out the cream background since page bg matches */
+  mix-blend-mode: multiply;
+  margin-bottom: -12px;
+  animation: logoIn 0.9s cubic-bezier(0.16,1,0.3,1) 0s both;
+}
+@keyframes logoIn {
+  from { opacity:0; transform:translateY(-14px) scale(0.94); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+
+/* ── WORLD MAP LABEL ── */
+.land-world-map {
+  position: relative; z-index: 2;
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(28px, 8vw, 54px);
+  letter-spacing: 0.1em;
+  text-align: center;
+  line-height: 1;
+  margin-bottom: 20px;
+  animation: fadeUp 0.7s ease 0.3s both;
+}
+.land-world-map .wm-world { color: var(--lime-dark); }
+.land-world-map .wm-map   { color: var(--purple); }
+.land-world-map .wm-dot   { color: var(--text-muted); font-size: 0.6em; }
+
+/* ── CONNECT WALLET BUTTON ── */
+.btn-connect-land {
+  position: relative; z-index: 2;
+  padding: 16px 56px;
+  background: var(--purple);
+  border: none;
+  border-radius: 50px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 20px;
+  letter-spacing: 0.08em;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 5px 22px rgba(91,79,204,0.38), 0 3px 0 var(--purple-dark);
+  animation: fadeUp 0.7s ease 0.45s both;
+}
+.btn-connect-land:hover  { background: var(--purple-dark); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(91,79,204,0.42), 0 3px 0 var(--purple-dark); }
+.btn-connect-land:active { transform: translateY(1px); box-shadow: 0 2px 10px rgba(91,79,204,0.3), 0 1px 0 var(--purple-dark); }
+.btn-connect-land:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* Mobile MetaMask button */
+.btn-mm-open {
+  position: relative; z-index: 2;
+  margin-top: 10px;
+  padding: 13px 36px;
   background: transparent;
-  border: 1px solid var(--green);
-  border-radius: 6px;
-  color: var(--green);
-  font-size: 11px; font-weight: 600;
-  cursor: pointer; letter-spacing: 0.5px;
-  transition: background 0.2s;
-  white-space: nowrap;
+  border: 2px solid var(--lime-dark);
+  border-radius: 50px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  color: var(--lime-dark);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: none;
+  animation: fadeUp 0.7s ease 0.55s both;
+  text-decoration: none;
 }
-#btn-connect:hover { background: rgba(74,222,128,0.1); }
-#btn-connect:disabled { opacity: 0.5; cursor: not-allowed; }
-#btn-connect.connected {
-  border-color: #333; color: var(--grey);
-  font-family: monospace; font-size: 10px;
-}
+.btn-mm-open:hover { background: var(--lime-dark); color: #fff; }
 
-/* LEGEND */
-#legend {
-  position: fixed; bottom: 24px; left: 16px;
-  background: rgba(10,10,10,0.92);
-  border: 1px solid #222; border-radius: 8px;
-  padding: 10px 14px; z-index: 500;
+/* ── STATS ── */
+.land-stats {
+  display: flex;
+  margin-top: 20px;
+  background: var(--bg-card);
+  border-radius: 14px;
+  border: 1.5px solid var(--border);
+  overflow: hidden;
+  position: relative; z-index: 2;
+  animation: fadeUp 0.7s ease 0.6s both;
 }
-.leg-title { font-size: 9px; color: var(--grey); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
-.leg-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-.leg-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid; flex-shrink: 0; }
-.leg-label { font-size: 10px; color: #aaa; }
+.land-stat {
+  padding: 11px 22px;
+  text-align: center;
+  border-right: 1.5px solid var(--border);
+}
+.land-stat:last-child { border-right: none; }
+.ls-num   { font-family:'Fredoka One', cursive; font-size:24px; line-height:1; color:var(--purple); }
+.ls-label { font-size:9px; font-weight:600; color:var(--text-muted); letter-spacing:0.1em; text-transform:uppercase; margin-top:2px; }
 
-/* MARKERS */
-.gf-marker-wrap {
-  position: relative; width: 42px; height: 42px;
-  border-radius: 50%; border: 2.5px solid var(--green);
-  overflow: visible; background: #1a1a1a;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.7);
-}
-.gf-marker-inner {
-  width: 100%; height: 100%; border-radius: 50%;
-  overflow: hidden; display: flex; align-items: center; justify-content: center;
-}
-.gf-marker-inner img { width: 100%; height: 100%; object-fit: cover; }
-.gf-badge {
-  position: absolute; bottom: -2px; right: -2px;
-  width: 15px; height: 15px; border-radius: 50%;
-  border: 1.5px solid #0a0a0a;
-  font-size: 7px; font-weight: 700; color: #000;
-  display: flex; align-items: center; justify-content: center;
+/* ── SOCIAL LINKS ── */
+.land-social {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  animation: fadeUp 0.7s ease 0.7s both;
   z-index: 2;
 }
+.soc-link {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--text-muted);
+  text-decoration: none; transition: color 0.2s; white-space: nowrap;
+}
+.soc-link:hover { color: var(--lime-dark); }
 
-/* POPUPS */
-.leaflet-popup-content-wrapper {
-  background: #141414 !important;
-  border: 1px solid #2a2a2a !important;
-  border-radius: 10px !important;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.8) !important;
-  padding: 0 !important; overflow: hidden;
+/* Error message on landing */
+.land-error {
+  position: relative; z-index: 2;
+  margin-top: 10px; font-size: 12px; font-weight: 500;
+  color: #B43020; background: #FDE8E4;
+  padding: 8px 18px; border-radius: 50px;
+  border: 1px solid #F5B8B0;
+  display: none;
+  animation: fadeUp 0.3s ease both;
 }
-.leaflet-popup-tip { background: #141414 !important; }
-.leaflet-popup-content { margin: 0 !important; }
-.popup-box { padding: 14px; width: 220px; }
-.popup-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-.popup-img {
-  width: 40px; height: 40px; border-radius: 50%;
-  border: 1.5px solid #333; background: #1a1a1a;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; flex-shrink: 0; overflow: hidden;
-}
-.popup-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.popup-name { font-size: 13px; font-weight: 600; color: #f0f0f0; }
-.popup-loc { font-size: 10px; color: var(--grey); margin-top: 1px; }
-.popup-bio { font-size: 11px; color: #aaa; line-height: 1.5; margin-bottom: 8px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.popup-foot { display: flex; flex-direction: column; gap: 6px; }
-.popup-stages { display: flex; flex-wrap: wrap; gap: 3px; }
-.spip {
-  padding: 2px 7px; border-radius: 4px;
-  font-size: 9px; font-weight: 600; border: 1px solid;
-  white-space: nowrap;
-}
-.popup-tw { font-size: 10px; color: var(--grey); text-decoration: none; }
-.popup-tw:hover { color: #fff; }
 
-/* OVERLAYS */
-.overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.75); z-index: 600;
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+@keyframes spin   { to{transform:rotate(360deg)} }
+
+/* ══════════════════════════════
+   CHECKING
+══════════════════════════════ */
+#screen-checking {
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 20px;
+}
+.check-banner { width: min(340px, 70vw); mix-blend-mode: multiply; }
+.check-ring   { width:52px; height:52px; border-radius:50%; border:3px solid var(--border); border-top-color:var(--purple); animation:spin 0.8s linear infinite; }
+.check-msg    { font-size:14px; font-weight:500; color:var(--text-muted); letter-spacing:0.05em; }
+
+/* ══════════════════════════════
+   NOT HOLDER
+══════════════════════════════ */
+#screen-noholder {
+  background: var(--bg);
+  display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  padding: 16px;
+  padding: 32px 24px; text-align: center;
 }
-.overlay.open { display: flex; }
-.panel {
-  background: #111; border: 1px solid #2a2a2a;
-  border-radius: 14px; width: min(420px, 100%);
-  max-height: 90vh; overflow-y: auto;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.9); position: relative;
-}
-.panel-head {
-  padding: 20px 20px 16px; border-bottom: 1px solid #1f1f1f;
-  display: flex; justify-content: space-between; align-items: flex-start;
-}
-.panel-title { font-size: 16px; font-weight: 700; }
-.panel-sub { font-size: 11px; color: var(--grey); margin-top: 3px; }
-.btn-x { background: none; border: none; color: var(--grey); font-size: 18px; cursor: pointer; padding: 2px 6px; line-height: 1; }
-.btn-x:hover { color: #fff; }
-.panel-body { padding: 20px; }
-.field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
-.field label { font-size: 9px; font-weight: 700; color: var(--grey); letter-spacing: 1.5px; text-transform: uppercase; }
-.field input, .field textarea {
-  background: #0d0d0d; border: 1px solid #2a2a2a;
-  border-radius: 6px; color: #f0f0f0; font-size: 12px;
-  padding: 9px 12px; font-family: inherit; outline: none;
-  transition: border-color 0.2s;
-}
-.field input:focus, .field textarea:focus { border-color: var(--green); }
-.field input::placeholder, .field textarea::placeholder { color: #444; }
-.field textarea { resize: vertical; min-height: 60px; }
-.field-hint { font-size: 9px; color: #555; }
-.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.stages-wrap { display: flex; gap: 6px; flex-wrap: wrap; }
-.sbadge {
-  padding: 5px 12px; border-radius: 20px;
-  font-size: 10px; font-weight: 600; border: 1px solid;
-}
-.pfp-row { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
-.pfp-circle {
-  width: 56px; height: 56px; border-radius: 50%;
-  border: 2px solid #2a2a2a; background: #1a1a1a;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px; overflow: hidden; flex-shrink: 0;
-}
-.pfp-circle img { width: 100%; height: 100%; object-fit: cover; }
-.divider { height: 1px; background: #1f1f1f; margin: 6px 0 16px; }
-.btn-main {
-  width: 100%; padding: 12px; background: var(--green);
-  border: none; border-radius: 7px; color: #000;
-  font-size: 12px; font-weight: 700; cursor: pointer;
-  letter-spacing: 0.5px; transition: background 0.2s; margin-bottom: 8px;
-}
-.btn-main:hover { background: #6ee89b; }
-.btn-main:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn-sec {
-  width: 100%; padding: 10px; background: transparent;
-  border: 1px solid #2a2a2a; border-radius: 7px;
-  color: var(--grey); font-size: 11px; cursor: pointer; transition: all 0.2s;
-}
-.btn-sec:hover { border-color: #fff; color: #fff; }
-.msg-err { font-size: 11px; color: #ef4444; margin-bottom: 10px; display: none; }
-.msg-ok  { font-size: 11px; color: var(--green); margin-bottom: 10px; display: none; }
-#panel-noholder .panel-body { text-align: center; padding: 30px 24px; }
-.big-icon { font-size: 44px; margin-bottom: 14px; }
+.nh-banner { width:min(300px,65vw); mix-blend-mode:multiply; margin-bottom:18px; opacity:0.85; }
+.nh-emoji  { font-size:52px; margin-bottom:14px; }
+.nh-title  { font-family:'Fredoka One',cursive; font-size:clamp(24px,7vw,40px); line-height:1; color:var(--text); margin-bottom:10px; }
+.nh-sub    { font-size:14px; font-weight:400; color:var(--text-muted); line-height:1.7; max-width:320px; margin-bottom:26px; }
+.btn-os    { padding:14px 36px; background:var(--lime-dark); border:none; border-radius:50px; font-family:'Fredoka One',cursive; font-size:18px; letter-spacing:0.06em; color:#fff; cursor:pointer; text-decoration:none; display:inline-block; box-shadow:0 4px 16px rgba(75,173,32,0.3); transition:all 0.2s; }
+.btn-os:hover { background:var(--lime); transform:translateY(-1px); }
+.btn-back  { margin-top:12px; padding:10px 24px; background:transparent; border:1.5px solid var(--border); border-radius:50px; font-size:12px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); cursor:pointer; transition:all 0.2s; display:block; }
+.btn-back:hover { border-color:var(--purple); color:var(--purple); }
 
-/* MY PROFILE BTN */
-#my-btn {
-  display: none; position: fixed; bottom: 24px; right: 16px;
-  z-index: 500; background: #111; border: 1px solid #2a2a2a;
-  border-radius: 10px; padding: 10px 14px; cursor: pointer;
-  align-items: center; gap: 10px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.5); transition: border-color 0.2s;
-}
-#my-btn:hover { border-color: var(--green); }
-#my-btn.show { display: flex; }
-#my-btn-img { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--green); object-fit: cover; display: none; }
-#my-btn-name { font-size: 11px; font-weight: 600; color: #f0f0f0; }
-#my-btn-sub  { font-size: 9px; color: var(--grey); }
+/* ══════════════════════════════
+   PROFILE
+══════════════════════════════ */
+#screen-profile { background:var(--bg); display:flex; flex-direction:column; align-items:center; overflow-y:auto; }
+.ptb { width:100%; padding:10px 18px; background:rgba(232,237,206,0.97); border-bottom:1.5px solid var(--border); display:flex; align-items:center; justify-content:space-between; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); position:sticky; top:0; z-index:10; flex-shrink:0; }
+.ptb-banner { height:40px; mix-blend-mode:multiply; }
+.ptb-badge  { background:var(--purple); color:#fff; font-family:'Fredoka One',cursive; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:3px 12px; border-radius:20px; white-space:nowrap; }
+.pf-content { width:100%; max-width:480px; padding:24px 20px 40px; }
+.pf-title   { font-family:'Fredoka One',cursive; font-size:clamp(28px,9vw,46px); line-height:1; color:var(--text); margin-bottom:5px; }
+.pf-title .acc { color:var(--purple); }
+.pf-sub     { font-size:13px; font-weight:400; color:var(--text-muted); margin-bottom:18px; }
+.pf-badges  { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:22px; }
+.pf-badge   { padding:5px 14px; border-radius:50px; font-size:11px; font-weight:600; letter-spacing:0.04em; border:1.5px solid; }
+.form-block { margin-bottom:16px; }
+.form-label { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-mid); margin-bottom:6px; display:block; }
+.form-input, .form-textarea { width:100%; background:var(--bg-card); border:1.5px solid var(--border); border-radius:10px; color:var(--text); font-size:14px; font-weight:400; padding:11px 14px; font-family:'Fredoka',sans-serif; outline:none; transition:border-color 0.2s; }
+.form-input:focus, .form-textarea:focus { border-color:var(--purple); }
+.form-input::placeholder, .form-textarea::placeholder { color:var(--text-muted); }
+.form-textarea { resize:vertical; min-height:70px; }
+.form-hint  { font-size:10px; color:var(--text-muted); margin-top:4px; }
+.form-row   { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.form-divider { height:1.5px; background:var(--border); margin:20px 0; }
+.pfp-row    { display:flex; gap:14px; align-items:flex-start; }
+.pfp-circle { width:60px; height:60px; border-radius:50%; border:2px solid var(--border); background:var(--bg-card); display:flex; align-items:center; justify-content:center; font-size:24px; overflow:hidden; flex-shrink:0; }
+.pfp-circle img { width:100%; height:100%; object-fit:cover; }
+.btn-save   { width:100%; padding:15px; background:var(--purple); border:none; border-radius:50px; font-family:'Fredoka One',cursive; font-size:20px; letter-spacing:0.06em; color:#fff; cursor:pointer; transition:all 0.2s; margin-bottom:10px; box-shadow:0 4px 16px rgba(91,79,204,0.3), 0 3px 0 var(--purple-dark); }
+.btn-save:hover { background:var(--purple-dark); transform:translateY(-1px); }
+.btn-save:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+.btn-skip   { width:100%; padding:12px; background:transparent; border:1.5px solid var(--border); border-radius:50px; font-size:12px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); cursor:pointer; transition:all 0.2s; }
+.btn-skip:hover { border-color:var(--lime-dark); color:var(--lime-dark); }
+.msg-err    { font-size:12px; font-weight:500; color:#C43020; margin-bottom:12px; display:none; background:#FDE8E4; padding:10px 14px; border-radius:8px; border:1px solid #F5B8B0; }
+.msg-ok     { font-size:12px; font-weight:500; color:var(--lime-dark); margin-bottom:12px; display:none; background:#EAF8D8; padding:10px 14px; border-radius:8px; border:1px solid var(--border); }
 
-/* TOAST */
-#toast {
-  position: fixed; bottom: 90px; left: 50%;
-  transform: translateX(-50%); z-index: 700;
-  background: #1a1a1a; border: 1px solid #333;
-  border-radius: 8px; padding: 10px 20px;
-  font-size: 12px; pointer-events: none;
-  opacity: 0; transition: opacity 0.3s; white-space: nowrap;
-}
-#toast.show { opacity: 1; }
-#toast.ok  { border-color: var(--green); color: var(--green); }
-#toast.err { border-color: #ef4444; color: #ef4444; }
-.spin {
-  display: inline-block; width: 14px; height: 14px;
-  border: 2px solid #333; border-top-color: var(--green);
-  border-radius: 50%; animation: sp 0.7s linear infinite;
-  vertical-align: middle; margin-right: 6px;
-}
-@keyframes sp { to { transform: rotate(360deg); } }
+/* ══════════════════════════════
+   MAP
+══════════════════════════════ */
+#screen-map { z-index:5; }
+#map { position:absolute; inset:0; background:var(--dark); }
+.leaflet-control-zoom a { background:#0F140F !important; color:#c8dca8 !important; border-color:#1E2A1E !important; }
+.leaflet-control-attribution { background:rgba(0,0,0,0.5) !important; color:#3A4A2A !important; font-size:9px !important; }
+.leaflet-control-attribution a { color:#3A4A2A !important; }
+#map-topbar { position:absolute; top:0; left:0; right:0; height:52px; background:rgba(7,10,7,0.96); border-bottom:1px solid var(--dborder); display:flex; align-items:center; justify-content:space-between; padding:0 16px; z-index:500; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+.mtb-logo   { height:34px; }
+.mtb-right  { display:flex; align-items:center; gap:12px; }
+.mtb-count  { font-size:11px; font-weight:500; color:var(--dgrey); }
+.mtb-count span { color:var(--lime); font-weight:700; }
+.mtb-wallet { font-family:monospace; font-size:10px; color:var(--dgrey); background:var(--dcard); border:1px solid var(--dborder); padding:4px 10px; border-radius:4px; }
+#map-legend { position:absolute; bottom:24px; left:16px; background:rgba(7,10,7,0.92); border:1px solid var(--dborder); border-radius:8px; padding:10px 14px; z-index:500; }
+.leg-title  { font-size:8px; font-weight:700; color:var(--dgrey); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:8px; }
+.leg-row    { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+.leg-dot    { width:9px; height:9px; border-radius:50%; border:2px solid; flex-shrink:0; }
+.leg-lbl    { font-size:10px; font-weight:500; color:#7A9A6A; }
+#my-btn     { display:none; position:absolute; bottom:24px; right:16px; z-index:500; background:var(--dcard); border:1px solid var(--dborder); border-radius:10px; padding:10px 14px; cursor:pointer; align-items:center; gap:10px; box-shadow:0 4px 16px rgba(0,0,0,0.6); transition:border-color 0.2s; }
+#my-btn:hover { border-color:var(--lime); }
+#my-btn.show { display:flex; }
+#my-btn-img  { width:30px; height:30px; border-radius:50%; border:1.5px solid var(--lime); object-fit:cover; display:none; }
+#my-btn-name { font-size:11px; font-weight:600; color:var(--dtext); }
+#my-btn-sub  { font-size:9px; color:var(--dgrey); }
+
+/* Markers */
+.gf-marker-wrap  { position:relative; width:42px; height:42px; border-radius:50%; border:2.5px solid var(--lime); overflow:visible; background:var(--dcard); display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.7); }
+.gf-marker-inner { width:100%; height:100%; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+.gf-marker-inner img { width:100%; height:100%; object-fit:cover; }
+.gf-badge { position:absolute; bottom:-2px; right:-2px; width:15px; height:15px; border-radius:50%; border:1.5px solid var(--dark); font-size:7px; font-weight:700; color:#000; display:flex; align-items:center; justify-content:center; z-index:2; }
+
+/* Popups */
+.leaflet-popup-content-wrapper { background:#0F140F !important; border:1px solid #1E2A1E !important; border-radius:10px !important; box-shadow:0 8px 24px rgba(0,0,0,0.8) !important; padding:0 !important; overflow:hidden; }
+.leaflet-popup-tip { background:#0F140F !important; }
+.leaflet-popup-content { margin:0 !important; }
+.popup-box   { padding:14px; width:220px; }
+.popup-top   { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.popup-img   { width:40px; height:40px; border-radius:50%; border:1.5px solid var(--dborder); background:var(--dcard); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; overflow:hidden; }
+.popup-img img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.popup-name  { font-size:13px; font-weight:600; color:var(--dtext); }
+.popup-loc   { font-size:10px; color:var(--dgrey); margin-top:1px; }
+.popup-bio   { font-size:11px; color:#7A9A6A; line-height:1.5; margin-bottom:8px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+.popup-foot  { display:flex; flex-direction:column; gap:5px; }
+.popup-stages { display:flex; flex-wrap:wrap; gap:3px; }
+.spip        { padding:2px 7px; border-radius:4px; font-size:9px; font-weight:600; border:1px solid; white-space:nowrap; }
+.popup-tw    { font-size:10px; color:var(--dgrey); text-decoration:none; }
+.popup-tw:hover { color:var(--lime); }
+
+/* Toast */
+#toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); z-index:999; background:var(--bg-card); border:1.5px solid var(--border); border-radius:50px; padding:10px 22px; font-size:13px; font-weight:600; pointer-events:none; opacity:0; transition:opacity 0.3s; white-space:nowrap; color:var(--text); box-shadow:0 4px 16px rgba(0,0,0,0.1); }
+#toast.show { opacity:1; }
+#toast.ok   { border-color:var(--lime-dark); color:var(--lime-dark); background:#EEF9E4; }
+#toast.err  { border-color:#C43020; color:#C43020; background:#FDE8E4; }
+.spin { display:inline-block; width:14px; height:14px; border:2.5px solid var(--border); border-top-color:var(--purple); border-radius:50%; animation:spin 0.7s linear infinite; vertical-align:middle; margin-right:6px; }
 </style>
 </head>
 <body>
 
-<div id="map"></div>
+<!-- ════════════════════════════════
+     LANDING
+════════════════════════════════ -->
+<div class="screen" id="screen-landing">
 
-<div id="topbar">
-  <div class="logo">
-    <span style="font-size:20px;">🗑️</span>
-    <div>
-      <div class="logo-text">Garbage Friends</div>
-      <div class="logo-sub">World Map</div>
-    </div>
+  <!-- Full banner logo — the wide one with GARBAGE FRIENDS + tagline -->
+  <img class="land-banner"
+    src="/logo-banner.jpg"
+    alt="Garbage Friends — One Friend's Trash Is Another Friend's Digital Collectible"
+    onerror="this.onerror=null;this.src='/wordmark.jpg';"
+  />
+
+  <div class="land-world-map">
+    <span class="wm-world">WORLD</span>
+    <span class="wm-dot"> · </span>
+    <span class="wm-map">MAP</span>
   </div>
-  <div style="display:flex;align-items:center;gap:14px;">
-    <div class="count"><span id="num">0</span> holders on the map</div>
-    <button id="btn-connect" onclick="connectWallet()">Connect Wallet</button>
+
+  <button class="btn-connect-land" id="btn-land-connect" onclick="connectWallet()">
+    Connect Wallet
+  </button>
+
+  <!-- Only shows on mobile when NOT inside MetaMask browser -->
+  <a class="btn-mm-open" id="btn-mm-mobile" href="#">
+    📱 Open in MetaMask App
+  </a>
+
+  <div class="land-error" id="land-error"></div>
+
+  <div class="land-stats">
+    <div class="land-stat"><div class="ls-num" id="land-count">—</div><div class="ls-label">On the map</div></div>
+    <div class="land-stat"><div class="ls-num">4</div><div class="ls-label">Collections</div></div>
+    <div class="land-stat"><div class="ls-num">6,500+</div><div class="ls-label">Total supply</div></div>
+  </div>
+
+  <div class="land-social">
+    <a class="soc-link" href="https://x.com/garbagefriends" target="_blank">𝕏 Twitter</a>
+    <a class="soc-link" href="https://discord.gg/typical-friends-1066053691024621608" target="_blank">💬 Discord</a>
+    <a class="soc-link" href="https://www.instagram.com/realgarbagefriends/" target="_blank">📸 IG</a>
+    <a class="soc-link" href="https://opensea.io/collection/garbage-friends-main" target="_blank">🌊 OpenSea</a>
   </div>
 </div>
 
-<div id="legend">
-  <div class="leg-title">Collections</div>
-  <div class="leg-row"><div class="leg-dot" style="border-color:#6B7280"></div><div class="leg-label">Garbage Bags</div></div>
-  <div class="leg-row"><div class="leg-dot" style="border-color:#9CA3AF"></div><div class="leg-label">Garbage Cans</div></div>
-  <div class="leg-row"><div class="leg-dot" style="border-color:#F59E0B"></div><div class="leg-label">Walking Cans</div></div>
-  <div class="leg-row"><div class="leg-dot" style="border-color:#4ADE80"></div><div class="leg-label">Garbage Friends</div></div>
+<!-- ════════════════════════════════
+     CHECKING
+════════════════════════════════ -->
+<div class="screen hidden" id="screen-checking">
+  <img class="check-banner" src="/logo-banner.jpg" alt="Garbage Friends" onerror="this.src='/wordmark.jpg'"/>
+  <div class="check-ring"></div>
+  <div class="check-msg" id="check-msg">Verifying your wallet</div>
 </div>
 
-<!-- NOT HOLDER -->
-<div class="overlay" id="ov-noholder">
-  <div class="panel" id="panel-noholder">
-    <div class="panel-body">
-      <div class="big-icon">🗑️</div>
-      <div class="panel-title" style="margin-bottom:8px;">No Garbage Friends Found</div>
-      <div style="font-size:12px;color:var(--grey);line-height:1.6;margin-bottom:20px;">
-        Your wallet doesn't hold any Garbage Friends NFTs.<br>Pick one up on OpenSea to join the map.
-      </div>
-      <a href="https://opensea.io/collection/garbage-friends-main" target="_blank">
-        <button class="btn-main">View on OpenSea</button>
-      </a>
-      <button class="btn-sec" onclick="closeOv('ov-noholder')">Close</button>
-    </div>
+<!-- ════════════════════════════════
+     NOT HOLDER
+════════════════════════════════ -->
+<div class="screen hidden" id="screen-noholder">
+  <img class="nh-banner" src="/logo-banner.jpg" alt="Garbage Friends" onerror="this.src='/wordmark.jpg'"/>
+  <div class="nh-emoji">🗑️</div>
+  <div class="nh-title">No Garbage Friends Found</div>
+  <div class="nh-sub">Your wallet doesn't hold any Garbage Bags, Garbage Cans, Walking Cans, or Garbage Friends NFTs.<br><br>Pick one up on OpenSea to join the world map.</div>
+  <a href="https://opensea.io/collection/garbage-friends-main" target="_blank" class="btn-os">Get A Garbage Friend</a>
+  <button class="btn-back" onclick="goToLanding()">← Try Another Wallet</button>
+</div>
+
+<!-- ════════════════════════════════
+     PROFILE
+════════════════════════════════ -->
+<div class="screen hidden" id="screen-profile">
+  <div class="ptb">
+    <img class="ptb-banner" src="/wordmark.jpg" alt="Garbage Friends" onerror="this.src='/logo-banner.jpg'" style="mix-blend-mode:multiply;"/>
+    <div class="ptb-badge" id="ptb-badge">Verified Holder</div>
   </div>
-</div>
-
-<!-- PROFILE PANEL -->
-<div class="overlay" id="ov-profile">
-  <div class="panel">
-    <div class="panel-head">
-      <div>
-        <div class="panel-title" id="ptitle">Create Your Profile</div>
-        <div class="panel-sub" id="psub">You'll appear on the world map</div>
-      </div>
-      <button class="btn-x" onclick="closeOv('ov-profile')">✕</button>
-    </div>
-    <div class="panel-body">
-      <div class="field">
-        <label>Your Collections</label>
-        <div class="stages-wrap" id="stage-badges"></div>
-      </div>
+  <div class="pf-content">
+    <div class="pf-title">Set Up Your<br><span class="acc">Profile</span></div>
+    <div class="pf-sub">You'll appear as a pin on the world map</div>
+    <div class="pf-badges" id="pf-badges"></div>
+    <div class="form-block">
       <div class="pfp-row">
         <div class="pfp-circle" id="pfp-prev">🗑️</div>
-        <div class="field" style="flex:1;margin-bottom:0;">
-          <label>Profile Picture URL</label>
-          <input type="url" id="f-pfp" placeholder="https://i.imgur.com/..." oninput="prevPfp(this.value)"/>
-          <div class="field-hint">Link to your NFT image or any image URL</div>
+        <div style="flex:1;">
+          <label class="form-label">Profile Picture URL</label>
+          <input class="form-input" type="url" id="f-pfp" placeholder="https://i.imgur.com/..." oninput="prevPfp(this.value)"/>
+          <div class="form-hint">Paste your NFT image URL or any image link</div>
         </div>
       </div>
-      <div class="field">
-        <label>Username</label>
-        <input type="text" id="f-user" placeholder="GarbageKing99" maxlength="24"/>
-      </div>
-      <div class="field">
-        <label>Bio</label>
-        <textarea id="f-bio" placeholder="Collecting garbage one NFT at a time..." maxlength="140"></textarea>
-      </div>
-      <div class="row2">
-        <div class="field">
-          <label>Twitter / X</label>
-          <input type="text" id="f-tw" placeholder="@username"/>
-        </div>
-        <div class="field">
-          <label>Country</label>
-          <input type="text" id="f-country" placeholder="United States" list="clist"/>
-          <datalist id="clist"></datalist>
-        </div>
-      </div>
-      <div class="field">
-        <label>State / Region <span style="font-weight:400;text-transform:none;font-size:9px;">(optional)</span></label>
-        <input type="text" id="f-state" placeholder="California"/>
-        <div class="field-hint">Helps place your marker more precisely</div>
-      </div>
-      <div class="divider"></div>
-      <div class="msg-err" id="ferr"></div>
-      <div class="msg-ok"  id="fok"></div>
-      <button class="btn-main" id="savebtn" onclick="saveProfile()">
-        <span id="savetxt">Save & Go Live on Map</span>
-      </button>
-      <button class="btn-sec" onclick="closeOv('ov-profile')">Cancel</button>
     </div>
+    <div class="form-block">
+      <label class="form-label">Username</label>
+      <input class="form-input" type="text" id="f-user" placeholder="GarbageKing99" maxlength="24"/>
+    </div>
+    <div class="form-block">
+      <label class="form-label">Bio</label>
+      <textarea class="form-textarea" id="f-bio" placeholder="Collecting garbage one NFT at a time..." maxlength="140"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-block">
+        <label class="form-label">Twitter / X</label>
+        <input class="form-input" type="text" id="f-tw" placeholder="@username"/>
+      </div>
+      <div class="form-block">
+        <label class="form-label">Country</label>
+        <input class="form-input" type="text" id="f-country" placeholder="United States" list="clist"/>
+        <datalist id="clist"></datalist>
+      </div>
+    </div>
+    <div class="form-block">
+      <label class="form-label">State / Region <span style="font-weight:400;text-transform:none;font-size:10px;">(optional)</span></label>
+      <input class="form-input" type="text" id="f-state" placeholder="South Carolina"/>
+      <div class="form-hint">Helps place your pin more precisely</div>
+    </div>
+    <div class="form-divider"></div>
+    <div class="msg-err" id="ferr"></div>
+    <div class="msg-ok"  id="fok"></div>
+    <button class="btn-save" id="savebtn" onclick="saveProfile()"><span id="savetxt">Go Live On The Map</span></button>
+    <button class="btn-skip" onclick="showMap()">Skip — just view the map</button>
   </div>
 </div>
 
-<!-- MY PROFILE -->
-<div id="my-btn" onclick="editProfile()">
-  <img id="my-btn-img" src="" onerror="this.style.display='none'"/>
-  <div>
-    <div id="my-btn-name">My Profile</div>
-    <div id="my-btn-sub">Edit profile</div>
+<!-- ════════════════════════════════
+     MAP
+════════════════════════════════ -->
+<div class="screen hidden" id="screen-map">
+  <div id="map"></div>
+  <div id="map-topbar">
+    <!-- Wordmark in the dark top bar — no blend mode needed on dark bg -->
+    <img class="mtb-logo" src="/wordmark.jpg" alt="Garbage Friends"
+      style="filter:brightness(1.1);"
+      onerror="this.outerHTML='<span style=\'font-family:Fredoka One,cursive;font-size:14px;color:#6FD038;letter-spacing:0.08em;\'>GARBAGE FRIENDS</span>'"
+    />
+    <div class="mtb-right">
+      <div class="mtb-count"><span id="map-count">0</span> on the map</div>
+      <div class="mtb-wallet" id="map-wallet"></div>
+    </div>
+  </div>
+  <div id="map-legend">
+    <div class="leg-title">Collections</div>
+    <div class="leg-row"><div class="leg-dot" style="border-color:#6B7280"></div><div class="leg-lbl">Garbage Bags</div></div>
+    <div class="leg-row"><div class="leg-dot" style="border-color:#9CA3AF"></div><div class="leg-lbl">Garbage Cans</div></div>
+    <div class="leg-row"><div class="leg-dot" style="border-color:#F59E0B"></div><div class="leg-lbl">Walking Cans</div></div>
+    <div class="leg-row"><div class="leg-dot" style="border-color:#6FD038"></div><div class="leg-lbl">Garbage Friends</div></div>
+  </div>
+  <div id="my-btn" onclick="editProfile()">
+    <img id="my-btn-img" src="" onerror="this.style.display='none'"/>
+    <div><div id="my-btn-name">My Profile</div><div id="my-btn-sub">Edit profile</div></div>
   </div>
 </div>
 
@@ -365,454 +452,291 @@ html, body {
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-
 <script>
-// ══════════════════════════════════════
-// CONFIG
-// ══════════════════════════════════════
 var SUPABASE_URL = 'https://buylvfnubwaovmlocwjy.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1eWx2Zm51Yndhb3ZtbG9jd2p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MzAxNzYsImV4cCI6MjA5NjAwNjE3Nn0._u3T_8vday1id0s7PY62fnKntisjxkm1A_UAPv9uo1g';
 var API_ENDPOINT = '/api/check-holdings';
 
-// Collections — name is displayed everywhere instead of "Stage X"
 var COLS = [
-  { stage:1, slug:'garbage-bags-official', name:'Garbage Bags',    color:'#6B7280' },
-  { stage:2, slug:'garbage-cans-1',        name:'Garbage Cans',    color:'#9CA3AF' },
-  { stage:3, slug:'walking-cans',          name:'Walking Cans',    color:'#F59E0B' },
-  { stage:4, slug:'garbage-friends-main',  name:'Garbage Friends', color:'#4ADE80' },
+  {stage:1,slug:'garbage-bags-official',name:'Garbage Bags',   color:'#6B7280'},
+  {stage:2,slug:'garbage-cans-1',       name:'Garbage Cans',   color:'#9CA3AF'},
+  {stage:3,slug:'walking-cans',         name:'Walking Cans',   color:'#F59E0B'},
+  {stage:4,slug:'garbage-friends-main', name:'Garbage Friends',color:'#6FD038'},
 ];
 
-// ══════════════════════════════════════
-// COORDS
-// ══════════════════════════════════════
-var CC = {
-  'United States':{lat:37.09,lng:-95.71},'USA':{lat:37.09,lng:-95.71},
-  'United Kingdom':{lat:51.50,lng:-0.12},'UK':{lat:51.50,lng:-0.12},
-  'Canada':{lat:56.13,lng:-106.34},'Australia':{lat:-25.27,lng:133.77},
-  'Germany':{lat:51.16,lng:10.45},'France':{lat:46.22,lng:2.21},
-  'Japan':{lat:36.20,lng:138.25},'South Korea':{lat:35.90,lng:127.76},
-  'Brazil':{lat:-14.23,lng:-51.92},'Mexico':{lat:23.63,lng:-102.55},
-  'Netherlands':{lat:52.13,lng:5.29},'Spain':{lat:40.46,lng:-3.74},
-  'Italy':{lat:41.87,lng:12.56},'Sweden':{lat:60.12,lng:18.64},
-  'Norway':{lat:60.47,lng:8.46},'Denmark':{lat:56.26,lng:9.50},
-  'Switzerland':{lat:46.81,lng:8.22},'Poland':{lat:51.91,lng:19.14},
-  'Portugal':{lat:39.39,lng:-8.22},'Argentina':{lat:-38.41,lng:-63.61},
-  'India':{lat:20.59,lng:78.96},'China':{lat:35.86,lng:104.19},
-  'Singapore':{lat:1.35,lng:103.81},'Nigeria':{lat:9.08,lng:8.67},
-  'South Africa':{lat:-30.55,lng:22.93},'UAE':{lat:23.42,lng:53.84},
-  'Turkey':{lat:38.96,lng:35.24},'Russia':{lat:61.52,lng:105.31},
-  'Philippines':{lat:12.87,lng:121.77},'Indonesia':{lat:-0.78,lng:113.92},
-  'Thailand':{lat:15.87,lng:100.99},'New Zealand':{lat:-40.90,lng:174.88},
-  'Ireland':{lat:53.41,lng:-8.24},'Belgium':{lat:50.50,lng:4.46},
-  'Greece':{lat:39.07,lng:21.82},'Israel':{lat:31.04,lng:34.85},
-  'Colombia':{lat:4.57,lng:-74.29},'Chile':{lat:-35.67,lng:-71.54},
-  'Vietnam':{lat:14.05,lng:108.27},'Malaysia':{lat:4.21,lng:101.97},
-  'Pakistan':{lat:30.37,lng:69.34},'Egypt':{lat:26.82,lng:30.80},
-  'Saudi Arabia':{lat:23.88,lng:45.08},'Ghana':{lat:7.94,lng:-1.02},
-  'Kenya':{lat:-0.02,lng:37.90},'Bangladesh':{lat:23.68,lng:90.35},
-};
-var SC = {
-  'Alabama':{lat:32.80,lng:-86.79},'Alaska':{lat:64.20,lng:-153.39},
-  'Arizona':{lat:34.04,lng:-111.09},'Arkansas':{lat:34.79,lng:-92.19},
-  'California':{lat:36.77,lng:-119.41},'Colorado':{lat:39.11,lng:-105.35},
-  'Connecticut':{lat:41.59,lng:-72.74},'Florida':{lat:27.99,lng:-81.76},
-  'Georgia':{lat:32.16,lng:-82.90},'Hawaii':{lat:19.89,lng:-155.58},
-  'Idaho':{lat:44.24,lng:-114.47},'Illinois':{lat:40.34,lng:-88.98},
-  'Indiana':{lat:40.27,lng:-86.13},'Iowa':{lat:41.87,lng:-93.09},
-  'Kansas':{lat:38.52,lng:-96.72},'Kentucky':{lat:37.66,lng:-84.67},
-  'Louisiana':{lat:31.16,lng:-91.86},'Maine':{lat:44.69,lng:-69.38},
-  'Maryland':{lat:39.04,lng:-76.64},'Massachusetts':{lat:42.23,lng:-71.53},
-  'Michigan':{lat:44.31,lng:-85.60},'Minnesota':{lat:46.72,lng:-93.90},
-  'Mississippi':{lat:32.74,lng:-89.67},'Missouri':{lat:38.45,lng:-92.28},
-  'Montana':{lat:46.87,lng:-110.36},'Nebraska':{lat:41.49,lng:-99.90},
-  'Nevada':{lat:38.80,lng:-116.41},'New Hampshire':{lat:43.19,lng:-71.57},
-  'New Jersey':{lat:40.05,lng:-74.40},'New Mexico':{lat:34.84,lng:-106.24},
-  'New York':{lat:42.16,lng:-74.94},'North Carolina':{lat:35.63,lng:-79.80},
-  'Ohio':{lat:40.38,lng:-82.99},'Oklahoma':{lat:35.56,lng:-96.92},
-  'Oregon':{lat:43.80,lng:-120.55},'Pennsylvania':{lat:41.20,lng:-77.19},
-  'South Carolina':{lat:33.85,lng:-80.94},'Tennessee':{lat:35.74,lng:-86.69},
-  'Texas':{lat:31.96,lng:-99.90},'Utah':{lat:39.32,lng:-111.09},
-  'Virginia':{lat:37.76,lng:-78.16},'Washington':{lat:47.75,lng:-120.74},
-  'Wisconsin':{lat:44.26,lng:-89.61},'Wyoming':{lat:43.07,lng:-107.29},
-  'South Carolina':{lat:33.85,lng:-80.94},
-};
+var CC={'United States':{lat:37.09,lng:-95.71},'USA':{lat:37.09,lng:-95.71},'United Kingdom':{lat:51.50,lng:-0.12},'UK':{lat:51.50,lng:-0.12},'Canada':{lat:56.13,lng:-106.34},'Australia':{lat:-25.27,lng:133.77},'Germany':{lat:51.16,lng:10.45},'France':{lat:46.22,lng:2.21},'Japan':{lat:36.20,lng:138.25},'South Korea':{lat:35.90,lng:127.76},'Brazil':{lat:-14.23,lng:-51.92},'Mexico':{lat:23.63,lng:-102.55},'Netherlands':{lat:52.13,lng:5.29},'Spain':{lat:40.46,lng:-3.74},'Italy':{lat:41.87,lng:12.56},'Sweden':{lat:60.12,lng:18.64},'Norway':{lat:60.47,lng:8.46},'Denmark':{lat:56.26,lng:9.50},'Switzerland':{lat:46.81,lng:8.22},'Poland':{lat:51.91,lng:19.14},'Portugal':{lat:39.39,lng:-8.22},'Argentina':{lat:-38.41,lng:-63.61},'India':{lat:20.59,lng:78.96},'China':{lat:35.86,lng:104.19},'Singapore':{lat:1.35,lng:103.81},'Nigeria':{lat:9.08,lng:8.67},'South Africa':{lat:-30.55,lng:22.93},'UAE':{lat:23.42,lng:53.84},'Turkey':{lat:38.96,lng:35.24},'Russia':{lat:61.52,lng:105.31},'Philippines':{lat:12.87,lng:121.77},'Indonesia':{lat:-0.78,lng:113.92},'Thailand':{lat:15.87,lng:100.99},'New Zealand':{lat:-40.90,lng:174.88},'Ireland':{lat:53.41,lng:-8.24},'Belgium':{lat:50.50,lng:4.46},'Greece':{lat:39.07,lng:21.82},'Israel':{lat:31.04,lng:34.85},'Colombia':{lat:4.57,lng:-74.29},'Chile':{lat:-35.67,lng:-71.54},'Vietnam':{lat:14.05,lng:108.27},'Malaysia':{lat:4.21,lng:101.97},'Pakistan':{lat:30.37,lng:69.34},'Egypt':{lat:26.82,lng:30.80},'Saudi Arabia':{lat:23.88,lng:45.08},'Ghana':{lat:7.94,lng:-1.02},'Kenya':{lat:-0.02,lng:37.90}};
+var SC={'Alabama':{lat:32.80,lng:-86.79},'Alaska':{lat:64.20,lng:-153.39},'Arizona':{lat:34.04,lng:-111.09},'Arkansas':{lat:34.79,lng:-92.19},'California':{lat:36.77,lng:-119.41},'Colorado':{lat:39.11,lng:-105.35},'Connecticut':{lat:41.59,lng:-72.74},'Florida':{lat:27.99,lng:-81.76},'Georgia':{lat:32.16,lng:-82.90},'Hawaii':{lat:19.89,lng:-155.58},'Idaho':{lat:44.24,lng:-114.47},'Illinois':{lat:40.34,lng:-88.98},'Indiana':{lat:40.27,lng:-86.13},'Iowa':{lat:41.87,lng:-93.09},'Kansas':{lat:38.52,lng:-96.72},'Kentucky':{lat:37.66,lng:-84.67},'Louisiana':{lat:31.16,lng:-91.86},'Maine':{lat:44.69,lng:-69.38},'Maryland':{lat:39.04,lng:-76.64},'Massachusetts':{lat:42.23,lng:-71.53},'Michigan':{lat:44.31,lng:-85.60},'Minnesota':{lat:46.72,lng:-93.90},'Mississippi':{lat:32.74,lng:-89.67},'Missouri':{lat:38.45,lng:-92.28},'Montana':{lat:46.87,lng:-110.36},'Nebraska':{lat:41.49,lng:-99.90},'Nevada':{lat:38.80,lng:-116.41},'New Hampshire':{lat:43.19,lng:-71.57},'New Jersey':{lat:40.05,lng:-74.40},'New Mexico':{lat:34.84,lng:-106.24},'New York':{lat:42.16,lng:-74.94},'North Carolina':{lat:35.63,lng:-79.80},'Ohio':{lat:40.38,lng:-82.99},'Oklahoma':{lat:35.56,lng:-96.92},'Oregon':{lat:43.80,lng:-120.55},'Pennsylvania':{lat:41.20,lng:-77.19},'South Carolina':{lat:33.85,lng:-80.94},'Tennessee':{lat:35.74,lng:-86.69},'Texas':{lat:31.96,lng:-99.90},'Utah':{lat:39.32,lng:-111.09},'Virginia':{lat:37.76,lng:-78.16},'Washington':{lat:47.75,lng:-120.74},'Wisconsin':{lat:44.26,lng:-89.61},'Wyoming':{lat:43.07,lng:-107.29}};
 
-// ══════════════════════════════════════
-// STATE
-// ══════════════════════════════════════
-var sb = null;
-var MAP = null;
-var wallet = null;
-var holdings = [];
-var myProfile = null;
-var markers = {};
+var sb=null,MAP=null,wallet=null,holdings=[],myProfile=null,markers={},mapReady=false;
 
-// ══════════════════════════════════════
-// BOOT
-// ══════════════════════════════════════
 window.onload = function() {
-  initSupabase();
-  initMap();
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   fillCountryList();
-  loadProfiles();
+  loadLandingCount();
+  setupMobile();
 };
 
-function initSupabase() {
-  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// ── MOBILE METAMASK ──
+function isMobile() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
-
-function initMap() {
-  var worldBounds = L.latLngBounds(L.latLng(-75, -220), L.latLng(83, 220));
-  MAP = L.map('map', {
-    center: [25, 10], zoom: 2, minZoom: 2, maxZoom: 15,
-    maxBounds: worldBounds,
-    maxBoundsViscosity: 1.0,
-    worldCopyJump: false,
-    bounceAtZoomLimits: false,
-  });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
-    subdomains: 'abcd', maxZoom: 18,
-  }).addTo(MAP);
-  MAP.on('drag', function() {
-    MAP.panInsideBounds(worldBounds, { animate: false });
-  });
+function hasMetaMask() {
+  return typeof window.ethereum !== 'undefined';
+}
+function setupMobile() {
+  if (!isMobile()) return;
+  if (!hasMetaMask()) {
+    // Not inside MetaMask browser — show "Open in MetaMask" button
+    var btn = document.getElementById('btn-mm-mobile');
+    var url = window.location.href.replace(/^https?:\/\//,'');
+    btn.href = 'https://metamask.app.link/dapp/' + url;
+    btn.style.display = 'inline-block';
+  }
 }
 
 function fillCountryList() {
   var dl = document.getElementById('clist');
-  Object.keys(CC).forEach(function(c) {
-    var o = document.createElement('option');
-    o.value = c; dl.appendChild(o);
-  });
+  Object.keys(CC).forEach(function(c){ var o=document.createElement('option');o.value=c;dl.appendChild(o); });
 }
 
-// ══════════════════════════════════════
-// LOAD PROFILES
-// ══════════════════════════════════════
-async function loadProfiles() {
+async function loadLandingCount() {
   try {
-    var res = await sb.from('gf_profiles').select('*');
-    if (res.error) throw res.error;
-    res.data.forEach(function(p) { addMarker(p); });
-    document.getElementById('num').textContent = res.data.length;
-  } catch(e) {
-    console.warn('Profile load error:', e);
-    document.getElementById('num').textContent = '0';
-  }
+    var r = await sb.from('gf_profiles').select('id',{count:'exact',head:true});
+    if (!r.error) document.getElementById('land-count').textContent = r.count || 0;
+  } catch(e) { document.getElementById('land-count').textContent='0'; }
 }
 
-// ══════════════════════════════════════
-// MARKERS
-// ══════════════════════════════════════
-function addMarker(p) {
-  if (!p.latitude || !p.longitude) return;
-  var s     = p.highest_stage || 1;
-  var col   = COLS.find(function(c) { return c.stage === s; });
-  var color = col ? col.color : '#6B7280';
-
-  var inner = p.profile_picture_url
-    ? '<img src="' + p.profile_picture_url + '" onerror="this.outerHTML=\'<span>🗑️</span>\'" style="width:100%;height:100%;object-fit:cover;"/>'
-    : '<span>🗑️</span>';
-
-  var icon = L.divIcon({
-    className: '',
-    html: '<div class="gf-marker-wrap" style="border-color:' + color + ';">' +
-          '<div class="gf-marker-inner">' + inner + '</div>' +
-          '<div class="gf-badge" style="background:' + color + ';"></div>' +
-          '</div>',
-    iconSize: [42,42], iconAnchor: [21,21], popupAnchor: [0,-26],
+function showScreen(id) {
+  ['screen-landing','screen-checking','screen-noholder','screen-profile','screen-map'].forEach(function(s){
+    document.getElementById(s).classList[s===id?'remove':'add']('hidden');
   });
-
-  // Build collection name pips
-  var pips = '';
-  COLS.forEach(function(c) {
-    var hasIt = (c.stage === 1 && p.stage_1) || (c.stage === 2 && p.stage_2) ||
-                (c.stage === 3 && p.stage_3) || (c.stage === 4 && p.stage_4);
-    if (hasIt) {
-      pips += '<span class="spip" style="background:' + c.color + '20;border-color:' + c.color + ';color:' + c.color + ';">' + c.name + '</span>';
-    }
-  });
-
-  var imgEl = p.profile_picture_url
-    ? '<img src="' + p.profile_picture_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.outerHTML=\'🗑️\'"/>'
-    : '🗑️';
-
-  var twEl = p.twitter_handle
-    ? '<a class="popup-tw" href="https://x.com/' + p.twitter_handle.replace('@','') + '" target="_blank">𝕏 ' + p.twitter_handle + '</a>'
-    : '';
-
-  var loc = [p.location_state, p.location_country].filter(Boolean).join(', ');
-
-  var popup = '<div class="popup-box">' +
-    '<div class="popup-top">' +
-      '<div class="popup-img">' + imgEl + '</div>' +
-      '<div><div class="popup-name">' + (p.username||'Anon') + '</div>' +
-      '<div class="popup-loc">📍 ' + loc + '</div></div>' +
-    '</div>' +
-    (p.bio ? '<div class="popup-bio">' + p.bio + '</div>' : '') +
-    '<div class="popup-foot">' +
-      '<div class="popup-stages">' + pips + '</div>' +
-      twEl +
-    '</div></div>';
-
-  var m = L.marker([p.latitude, p.longitude], { icon:icon });
-  m.bindPopup(popup, { maxWidth:260 });
-  m.addTo(MAP);
-  markers[p.id] = m;
+  if (id==='screen-map' && !mapReady) { mapReady=true; setTimeout(initMap,100); }
 }
 
-// ══════════════════════════════════════
-// WALLET
-// ══════════════════════════════════════
+function goToLanding() {
+  wallet=null; holdings=[];
+  var btn=document.getElementById('btn-land-connect');
+  btn.textContent='Connect Wallet'; btn.disabled=false;
+  document.getElementById('land-error').style.display='none';
+  showScreen('screen-landing');
+}
+
+function showMap() {
+  showScreen('screen-map');
+  if(!mapReady){mapReady=true;setTimeout(initMap,100);}
+  else setTimeout(function(){MAP&&MAP.invalidateSize();},200);
+}
+
+function showLandError(msg) {
+  var el = document.getElementById('land-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// ── CONNECT WALLET ──
 async function connectWallet() {
-  if (!window.ethereum) {
-    toast('MetaMask not found. Please install it.', 'err');
+  // Mobile without MetaMask browser → deep link
+  if (isMobile() && !hasMetaMask()) {
+    var url = window.location.href.replace(/^https?:\/\//,'');
+    window.location.href = 'https://metamask.app.link/dapp/' + url;
     return;
   }
-  var btn = document.getElementById('btn-connect');
+
+  if (!window.ethereum) {
+    showLandError('MetaMask not found. Install the MetaMask extension to continue.');
+    return;
+  }
+
+  var btn = document.getElementById('btn-land-connect');
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span> Connecting...';
+  document.getElementById('land-error').style.display='none';
+
   try {
     var accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    if (!accounts || accounts.length === 0) throw new Error('No accounts');
+    if (!accounts || !accounts.length) throw new Error('No accounts returned');
     wallet = accounts[0];
-    btn.textContent = wallet.slice(0,6) + '...' + wallet.slice(-4);
-    btn.classList.add('connected');
-    btn.disabled = false;
+    document.getElementById('ptb-badge').textContent = wallet.slice(0,6)+'...'+wallet.slice(-4);
+    document.getElementById('map-wallet').textContent = wallet.slice(0,6)+'...'+wallet.slice(-4);
+    showScreen('screen-checking');
     await checkHoldings();
   } catch(e) {
-    btn.textContent = 'Connect Wallet';
-    btn.classList.remove('connected');
+    btn.innerHTML = 'Connect Wallet';
     btn.disabled = false;
-    if (e.code !== 4001) toast('Connection failed. Try again.', 'err');
+    if (e.code === 4001) {
+      showLandError('Connection cancelled. Try again when ready.');
+    } else {
+      showLandError('Connection failed: ' + (e.message || 'Please try again.'));
+    }
   }
 }
 
-// ══════════════════════════════════════
-// HOLDINGS
-// ══════════════════════════════════════
+// ── CHECK HOLDINGS ──
 async function checkHoldings() {
-  toast('Checking your collections...', '');
+  setCheckMsg('Verifying your collections...');
   holdings = [];
   try {
     var res = await fetch(API_ENDPOINT + '?wallet=' + wallet);
-    if (res.ok) {
-      var data = await res.json();
-      holdings = data.holdings || [];
-    } else { throw new Error('API ' + res.status); }
+    if (res.ok) { var d = await res.json(); holdings = d.holdings || []; }
+    else throw new Error('api');
   } catch(e) {
-    console.warn('API failed, trying direct:', e.message);
     holdings = await checkDirect();
   }
 
-  if (holdings.length === 0) { openOv('ov-noholder'); return; }
+  if (!holdings.length) { showScreen('screen-noholder'); return; }
 
+  setCheckMsg('Almost there...');
   var r = await sb.from('gf_profiles').select('*').eq('wallet_address', wallet.toLowerCase()).maybeSingle();
   if (r.data) {
-    myProfile = r.data;
-    showMyBtn(r.data);
-    toast('Welcome back, ' + r.data.username + '!', 'ok');
-    if (r.data.latitude) MAP.flyTo([r.data.latitude, r.data.longitude], 6, { duration:1.5 });
-    return;
+    myProfile = r.data; showMap();
+    setTimeout(function(){ showMyBtn(r.data); loadMapProfiles(); if(r.data.latitude)MAP&&MAP.flyTo([r.data.latitude,r.data.longitude],6,{duration:1.5}); toast('Welcome back, '+r.data.username+'!','ok'); }, 400);
+  } else {
+    showProfileScreen();
   }
-  openProfilePanel(false);
 }
 
 async function checkDirect() {
   var found = [];
   await Promise.all(COLS.map(async function(col) {
     try {
-      var r = await fetch(
-        'https://api.opensea.io/api/v2/chain/ethereum/account/' + wallet + '/nfts?collection=' + col.slug + '&limit=1',
-        { headers:{ accept:'application/json' } }
-      );
-      var d = await r.json();
-      if (d.nfts && d.nfts.length > 0) found.push(col.stage);
-    } catch(e) {}
+      var r = await fetch('https://api.opensea.io/api/v2/chain/ethereum/account/'+wallet+'/nfts?collection='+col.slug+'&limit=1',{headers:{accept:'application/json'}});
+      var d = await r.json(); if(d.nfts&&d.nfts.length) found.push(col.stage);
+    } catch(e){}
   }));
   return found;
 }
 
-// ══════════════════════════════════════
-// PROFILE PANEL
-// ══════════════════════════════════════
-function openProfilePanel(isEdit) {
-  document.getElementById('ptitle').textContent  = isEdit ? 'Edit Your Profile' : 'Create Your Profile';
-  document.getElementById('psub').textContent    = isEdit ? 'Update your details' : "You'll appear on the world map";
-  document.getElementById('savetxt').textContent = isEdit ? 'Update Profile' : 'Save & Go Live on Map';
+function setCheckMsg(m){ document.getElementById('check-msg').textContent=m; }
 
-  // Show collection name badges
-  var bw = document.getElementById('stage-badges');
-  bw.innerHTML = '';
-  holdings.forEach(function(s) {
-    var col = COLS.find(function(c) { return c.stage === s; });
-    if (col) {
-      bw.innerHTML += '<span class="sbadge" style="background:' + col.color + '20;border-color:' + col.color + ';color:' + col.color + ';">' + col.name + '</span>';
-    }
+// ── PROFILE ──
+function showProfileScreen() {
+  var bw=document.getElementById('pf-badges'); bw.innerHTML='';
+  holdings.forEach(function(s){
+    var col=COLS.find(function(c){return c.stage===s;});
+    if(col) bw.innerHTML+='<span class="pf-badge" style="background:'+col.color+'18;border-color:'+col.color+';color:'+col.color+';">'+col.name+'</span>';
   });
-
-  if (isEdit && myProfile) {
-    document.getElementById('f-pfp').value     = myProfile.profile_picture_url || '';
-    document.getElementById('f-user').value    = myProfile.username || '';
-    document.getElementById('f-bio').value     = myProfile.bio || '';
-    document.getElementById('f-tw').value      = myProfile.twitter_handle || '';
-    document.getElementById('f-country').value = myProfile.location_country || '';
-    document.getElementById('f-state').value   = myProfile.location_state || '';
-    if (myProfile.profile_picture_url) prevPfp(myProfile.profile_picture_url);
+  if(myProfile){
+    document.getElementById('f-pfp').value=myProfile.profile_picture_url||'';
+    document.getElementById('f-user').value=myProfile.username||'';
+    document.getElementById('f-bio').value=myProfile.bio||'';
+    document.getElementById('f-tw').value=myProfile.twitter_handle||'';
+    document.getElementById('f-country').value=myProfile.location_country||'';
+    document.getElementById('f-state').value=myProfile.location_state||'';
+    if(myProfile.profile_picture_url) prevPfp(myProfile.profile_picture_url);
   } else {
-    ['f-pfp','f-user','f-bio','f-tw','f-country','f-state'].forEach(function(id) {
-      document.getElementById(id).value = '';
-    });
-    document.getElementById('pfp-prev').innerHTML = '🗑️';
+    ['f-pfp','f-user','f-bio','f-tw','f-country','f-state'].forEach(function(id){document.getElementById(id).value='';});
+    document.getElementById('pfp-prev').innerHTML='🗑️';
   }
-
-  document.getElementById('ferr').style.display = 'none';
-  document.getElementById('fok').style.display  = 'none';
-  openOv('ov-profile');
+  document.getElementById('ferr').style.display='none';
+  document.getElementById('fok').style.display='none';
+  document.getElementById('savetxt').textContent=myProfile?'Update Profile':'Go Live On The Map';
+  showScreen('screen-profile');
 }
 
-function prevPfp(url) {
-  var el = document.getElementById('pfp-prev');
-  el.innerHTML = url
-    ? '<img src="' + url + '" onerror="this.parentNode.innerHTML=\'🗑️\'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>'
-    : '🗑️';
+function prevPfp(url){
+  var el=document.getElementById('pfp-prev');
+  el.innerHTML=url?'<img src="'+url+'" onerror="this.parentNode.innerHTML=\'🗑️\'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>':'🗑️';
 }
 
-async function saveProfile() {
-  var ferr = document.getElementById('ferr');
-  var fok  = document.getElementById('fok');
-  var btn  = document.getElementById('savebtn');
-  ferr.style.display = 'none';
-  fok.style.display  = 'none';
-
-  var username = document.getElementById('f-user').value.trim();
-  var bio      = document.getElementById('f-bio').value.trim();
-  var tw       = document.getElementById('f-tw').value.trim();
-  var pfp      = document.getElementById('f-pfp').value.trim();
-  var country  = document.getElementById('f-country').value.trim();
-  var state    = document.getElementById('f-state').value.trim();
-
-  if (!username) { showErr('Username is required.'); return; }
-  if (!country)  { showErr('Country is required.'); return; }
-
-  btn.disabled = true;
-  document.getElementById('savetxt').innerHTML = '<span class="spin"></span> Saving...';
-
-  var coords = getCoords(country, state);
-  if (!coords) coords = await nominatim(country, state);
-  if (!coords) coords = { lat:0, lng:0 };
-
-  var high = holdings.length ? Math.max.apply(null, holdings) : 1;
-  var data = {
-    wallet_address:      wallet.toLowerCase(),
-    username:            username,
-    bio:                 bio,
-    twitter_handle:      tw,
-    profile_picture_url: pfp,
-    location_country:    country,
-    location_state:      state,
-    latitude:            coords.lat,
-    longitude:           coords.lng,
-    highest_stage:       high,
-    stage_1: holdings.indexOf(1) > -1,
-    stage_2: holdings.indexOf(2) > -1,
-    stage_3: holdings.indexOf(3) > -1,
-    stage_4: holdings.indexOf(4) > -1,
-  };
-
-  try {
-    var r = await sb.from('gf_profiles').upsert(data, { onConflict:'wallet_address' }).select().single();
-    if (r.error) throw r.error;
-    myProfile = r.data;
-
-    if (markers[myProfile.id]) {
-      MAP.removeLayer(markers[myProfile.id]);
-      delete markers[myProfile.id];
-    }
-
-    addMarker(myProfile);
-    showMyBtn(myProfile);
-    MAP.flyTo([coords.lat, coords.lng], 6, { duration:1.8 });
-    document.getElementById('num').textContent = Object.keys(markers).length;
-
-    fok.textContent   = "You're live on the map!";
-    fok.style.display = 'block';
-    toast("You're on the map!", 'ok');
-    setTimeout(function() { closeOv('ov-profile'); }, 1600);
-  } catch(e) {
-    showErr(e.message || 'Failed to save. Try again.');
-  }
-
-  btn.disabled = false;
-  document.getElementById('savetxt').textContent = myProfile ? 'Update Profile' : 'Save & Go Live on Map';
+async function saveProfile(){
+  var ferr=document.getElementById('ferr'),fok=document.getElementById('fok'),btn=document.getElementById('savebtn');
+  ferr.style.display='none'; fok.style.display='none';
+  var username=document.getElementById('f-user').value.trim();
+  var bio=document.getElementById('f-bio').value.trim();
+  var tw=document.getElementById('f-tw').value.trim();
+  var pfp=document.getElementById('f-pfp').value.trim();
+  var country=document.getElementById('f-country').value.trim();
+  var state=document.getElementById('f-state').value.trim();
+  if(!username){showErr('Username is required.');return;}
+  if(!country){showErr('Country is required to place your pin.');return;}
+  btn.disabled=true;
+  document.getElementById('savetxt').innerHTML='<span class="spin"></span> Saving...';
+  var coords=getCoords(country,state);
+  if(!coords) coords=await nominatim(country,state);
+  if(!coords) coords={lat:0,lng:0};
+  var high=holdings.length?Math.max.apply(null,holdings):1;
+  var data={wallet_address:wallet.toLowerCase(),username:username,bio:bio,twitter_handle:tw,profile_picture_url:pfp,location_country:country,location_state:state,latitude:coords.lat,longitude:coords.lng,highest_stage:high,stage_1:holdings.indexOf(1)>-1,stage_2:holdings.indexOf(2)>-1,stage_3:holdings.indexOf(3)>-1,stage_4:holdings.indexOf(4)>-1};
+  try{
+    var r=await sb.from('gf_profiles').upsert(data,{onConflict:'wallet_address'}).select().single();
+    if(r.error) throw r.error;
+    myProfile=r.data;
+    fok.textContent="You're on the map!"; fok.style.display='block';
+    toast("You're live on the map!",'ok');
+    setTimeout(function(){showMap();setTimeout(function(){loadMapProfiles();showMyBtn(myProfile);if(coords.lat)MAP&&MAP.flyTo([coords.lat,coords.lng],6,{duration:1.8});},400);},1200);
+  }catch(e){showErr(e.message||'Failed to save. Try again.');}
+  btn.disabled=false;
+  document.getElementById('savetxt').textContent=myProfile?'Update Profile':'Go Live On The Map';
 }
 
-function showErr(msg) {
-  var el = document.getElementById('ferr');
-  el.textContent = msg; el.style.display = 'block';
+function showErr(m){ var el=document.getElementById('ferr'); el.textContent=m; el.style.display='block'; }
+
+function editProfile(){
+  if(!myProfile) return;
+  holdings=[]; if(myProfile.stage_1)holdings.push(1); if(myProfile.stage_2)holdings.push(2); if(myProfile.stage_3)holdings.push(3); if(myProfile.stage_4)holdings.push(4);
+  showProfileScreen();
 }
 
-function showMyBtn(p) {
-  var img = document.getElementById('my-btn-img');
-  // Show collection name for highest stage
-  var col = COLS.find(function(c) { return c.stage === (p.highest_stage||1); });
-  document.getElementById('my-btn-name').textContent = p.username || 'My Profile';
-  document.getElementById('my-btn-sub').textContent  = col ? col.name + ' holder' : 'Holder';
-  if (p.profile_picture_url) {
-    img.src = p.profile_picture_url;
-    img.style.display = 'block';
-  }
+// ── MAP ──
+function initMap(){
+  var bounds=L.latLngBounds(L.latLng(-75,-220),L.latLng(83,220));
+  MAP=L.map('map',{center:[25,10],zoom:2,minZoom:2,maxZoom:15,maxBounds:bounds,maxBoundsViscosity:1.0,worldCopyJump:false,bounceAtZoomLimits:false});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',subdomains:'abcd',maxZoom:18}).addTo(MAP);
+  MAP.on('drag',function(){MAP.panInsideBounds(bounds,{animate:false});});
+  loadMapProfiles();
+}
+
+async function loadMapProfiles(){
+  if(!MAP) return;
+  try{
+    var res=await sb.from('gf_profiles').select('*');
+    if(res.error) throw res.error;
+    Object.values(markers).forEach(function(m){MAP.removeLayer(m);}); markers={};
+    res.data.forEach(function(p){addMarker(p);});
+    document.getElementById('map-count').textContent=res.data.length;
+    document.getElementById('land-count').textContent=res.data.length;
+  }catch(e){console.warn('Map load:',e);}
+}
+
+function addMarker(p){
+  if(!p.latitude||!p.longitude) return;
+  var s=p.highest_stage||1,col=COLS.find(function(c){return c.stage===s;}),color=col?col.color:'#6B7280';
+  var inner=p.profile_picture_url?'<img src="'+p.profile_picture_url+'" onerror="this.outerHTML=\'<span>🗑️</span>\'" style="width:100%;height:100%;object-fit:cover;"/>':'<span>🗑️</span>';
+  var icon=L.divIcon({className:'',html:'<div class="gf-marker-wrap" style="border-color:'+color+';"><div class="gf-marker-inner">'+inner+'</div><div class="gf-badge" style="background:'+color+';"></div></div>',iconSize:[42,42],iconAnchor:[21,21],popupAnchor:[0,-26]});
+  var pips='';
+  COLS.forEach(function(c){var has=(c.stage===1&&p.stage_1)||(c.stage===2&&p.stage_2)||(c.stage===3&&p.stage_3)||(c.stage===4&&p.stage_4);if(has)pips+='<span class="spip" style="background:'+c.color+'18;border-color:'+c.color+';color:'+c.color+';">'+c.name+'</span>';});
+  var imgEl=p.profile_picture_url?'<img src="'+p.profile_picture_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.outerHTML=\'🗑️\'"/>':'🗑️';
+  var twEl=p.twitter_handle?'<a class="popup-tw" href="https://x.com/'+p.twitter_handle.replace('@','')+'" target="_blank">𝕏 '+p.twitter_handle+'</a>':'';
+  var loc=[p.location_state,p.location_country].filter(Boolean).join(', ');
+  var popup='<div class="popup-box"><div class="popup-top"><div class="popup-img">'+imgEl+'</div><div><div class="popup-name">'+(p.username||'Anon')+'</div><div class="popup-loc">📍 '+loc+'</div></div></div>'+(p.bio?'<div class="popup-bio">'+p.bio+'</div>':'')+'<div class="popup-foot"><div class="popup-stages">'+pips+'</div>'+twEl+'</div></div>';
+  var m=L.marker([p.latitude,p.longitude],{icon:icon}); m.bindPopup(popup,{maxWidth:260}); m.addTo(MAP); markers[p.id]=m;
+}
+
+function showMyBtn(p){
+  var img=document.getElementById('my-btn-img');
+  var col=COLS.find(function(c){return c.stage===(p.highest_stage||1);});
+  document.getElementById('my-btn-name').textContent=p.username||'My Profile';
+  document.getElementById('my-btn-sub').textContent=col?col.name+' holder':'Holder';
+  if(p.profile_picture_url){img.src=p.profile_picture_url;img.style.display='block';}
   document.getElementById('my-btn').classList.add('show');
 }
 
-function editProfile() {
-  if (!myProfile) return;
-  holdings = [];
-  if (myProfile.stage_1) holdings.push(1);
-  if (myProfile.stage_2) holdings.push(2);
-  if (myProfile.stage_3) holdings.push(3);
-  if (myProfile.stage_4) holdings.push(4);
-  openProfilePanel(true);
-}
-
-// ══════════════════════════════════════
-// GEOCODING
-// ══════════════════════════════════════
-function jitter() { return (Math.random() - 0.5) * 2.5; }
-
-function getCoords(country, state) {
-  var ck = Object.keys(CC).find(function(k) { return k.toLowerCase() === country.toLowerCase(); });
-  if (state) {
-    var sk = Object.keys(SC).find(function(k) { return k.toLowerCase() === state.toLowerCase(); });
-    if (sk) return { lat: SC[sk].lat + jitter(), lng: SC[sk].lng + jitter() };
-  }
-  if (ck) return { lat: CC[ck].lat + jitter(), lng: CC[ck].lng + jitter() };
+function jitter(){ return(Math.random()-0.5)*2.5; }
+function getCoords(country,state){
+  var ck=Object.keys(CC).find(function(k){return k.toLowerCase()===country.toLowerCase();});
+  if(state){var sk=Object.keys(SC).find(function(k){return k.toLowerCase()===state.toLowerCase();});if(sk)return{lat:SC[sk].lat+jitter(),lng:SC[sk].lng+jitter()};}
+  if(ck) return{lat:CC[ck].lat+jitter(),lng:CC[ck].lng+jitter()};
   return null;
 }
-
-async function nominatim(country, state) {
-  var q = [state, country].filter(Boolean).join(', ');
-  try {
-    var r = await fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(q) + '&limit=1');
-    var d = await r.json();
-    if (d && d[0]) return { lat: parseFloat(d[0].lat) + jitter(), lng: parseFloat(d[0].lon) + jitter() };
-  } catch(e) {}
+async function nominatim(country,state){
+  var q=[state,country].filter(Boolean).join(', ');
+  try{var r=await fetch('https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=1');var d=await r.json();if(d&&d[0])return{lat:parseFloat(d[0].lat)+jitter(),lng:parseFloat(d[0].lon)+jitter()};}catch(e){}
   return null;
 }
-
-// ══════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════
-function openOv(id)  { document.getElementById(id).classList.add('open'); }
-function closeOv(id) { document.getElementById(id).classList.remove('open'); }
 
 var toastTimer;
-function toast(msg, type) {
-  var el = document.getElementById('toast');
-  el.textContent = msg; el.className = 'show ' + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(function() { el.className = ''; }, 3000);
+function toast(msg,type){
+  var el=document.getElementById('toast'); el.textContent=msg; el.className='show '+type;
+  clearTimeout(toastTimer); toastTimer=setTimeout(function(){el.className='';},3000);
 }
 </script>
 </body>
