@@ -727,8 +727,8 @@ function addMarker(p){
   }
 
   var inner=p.profile_picture_url
-    ?'<img src="'+p.profile_picture_url+'" onerror="this.outerHTML='<span style=line-height:46px>\ud83d\uddd1\ufe0f</span>'" style="width:100%;height:100%;object-fit:cover;"/>'
-    :'<span>\ud83d\uddd1\ufe0f</span>';
+    ?'<img src="'+p.profile_picture_url+'" onerror="this.outerHTML='<span style=line-height:46px>🗑️</span>'" style="width:100%;height:100%;object-fit:cover;"/>'
+    :'<span>🗑️</span>';
 
   var icon=L.divIcon({
     className:'',
@@ -745,10 +745,10 @@ function addMarker(p){
   }).join('');
 
   var imgEl=p.profile_picture_url
-    ?'<img src="'+p.profile_picture_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.outerHTML='\ud83d\uddd1\ufe0f'"/>'
-    :'\ud83d\uddd1\ufe0f';
+    ?'<img src="'+p.profile_picture_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.outerHTML='🗑️'"/>'
+    :'🗑️';
   var twEl=p.twitter_handle
-    ?'<a class="popup-tw" href="https://x.com/'+p.twitter_handle.replace('@','')+'" target="_blank">\ud835\udd4f '+p.twitter_handle+'</a>'
+    ?'<a class="popup-tw" href="https://x.com/'+p.twitter_handle.replace('@','')+'" target="_blank">𝕏 '+p.twitter_handle+'</a>'
     :'';
   var loc=[p.location_state,p.location_country].filter(Boolean).join(', ');
 
@@ -756,7 +756,7 @@ function addMarker(p){
     '<div class="popup-top">'+
       '<div class="popup-img">'+imgEl+'</div>'+
       '<div><div class="popup-name">'+(p.username||'Anon')+'</div>'+
-      '<div class="popup-loc">\ud83d\udccd '+loc+'</div></div>'+
+      '<div class="popup-loc">📍 '+loc+'</div></div>'+
     '</div>'+
     (p.bio?'<div class="popup-bio">'+p.bio+'</div>':'')+
     '<div class="popup-coll-label">COLLECTIONS</div>'+
